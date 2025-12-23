@@ -1,10 +1,10 @@
 import { signInWithPopup } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { auth, googleProvider, db } from "./config";
+import { auth, googleProvider, db } from "./firebase";
 
 const getRoleFromEmail = (email) => {
-  if (email.endsWith("@student.college.edu")) return "student";
-  if (email.endsWith("@club.college.edu")) return "club";
+  if (email.endsWith("@vitapstudent.ac.in")) return "student";
+  if (email.endsWith("@vitap.ac.in")) return "club";
   return "admin"; 
 };
 

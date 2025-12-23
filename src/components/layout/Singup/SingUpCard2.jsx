@@ -3,7 +3,7 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
-const SingUpCard2 = ({txt,children}) => {
+const SingUpCard2 = ({txt,onGoogleLogin,children}) => {
   return (
     <div className="min-h-screen flex items-center justify-center min-w-screen">
       <div className="card w-176 h-100 bg-base-100 card-xl shadow-sm flex items-center justify-center gap-6">
@@ -46,11 +46,16 @@ const SingUpCard2 = ({txt,children}) => {
         </h2>
         <div className="mx-auto flex flex-col gap-3">
           <p className="font-extralight text-center text-[32px]">Sign {txt} to continue</p>
-          <div className="mx-auto">
-          <button onClick={onGoogleLogin} className="btn btn-primary rounded-2xl px-10">
-             Sign {txt} with Google
-          </button>
-          </div>
+          {onGoogleLogin && (
+            <div className="mx-auto">
+              <button
+                onClick={onGoogleLogin}
+                className="btn btn-primary rounded-2xl px-10"
+              >
+                Sign {txt} with Google
+              </button>
+            </div>
+          )}
           <p className="font-light mt-3">
             By signing in, you agree to our{" "}
             <span className="text-blue-500">Terms </span>and{" "}

@@ -9,7 +9,7 @@ const FeaturesL = () => {
   return (
     <div className="p-7 flex flex-col gap-5 mt-10 ">
     <span className="font-semibold text-[36px]">FEATURES OVERVIEW</span>
-    <div class="flex flex-wrap gap-4">
+    <div className="flex flex-wrap gap-4">
     <CardNoImg title="Event Discovery" pText="Browse all campus events in one place and find what matters to you " color="blue"><IoCompassOutline className="text-blue-500"/></CardNoImg>
     <CardNoImg title="Smart Suggestions" pText="Stay informed with reminders and important updates" color="green"><FaRegUser className="text-green-500"/></CardNoImg>
     <CardNoImg title="Club Tools" pText="Create events, manage participation, and tract engagement easily" color="yellow"><IoMdSettings className="text-yellow-500"/></CardNoImg>

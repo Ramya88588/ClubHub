@@ -7,10 +7,10 @@ import SingUpCard2 from '@/components/layout/Singup/SingUpCard2';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const handleLogin = async () =>{
+  const handleGoogleLogin = async () =>{
     try{
       const user = await googleSignIn();
-      navigate(`/${user.role}`);
+      navigate(`/${user.role}`); // student / club / admin
 
     }catch(err){
       console.error("Login failed : " ,err);
