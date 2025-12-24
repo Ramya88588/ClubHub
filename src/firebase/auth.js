@@ -3,10 +3,16 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "./firebase";
 
 const getRoleFromEmail = (email) => {
-  if (email.endsWith("@vitapstudent.ac.in")) return "student";
-  if (email.endsWith("@vitap.ac.in")) return "club";
-  return "admin"; 
+  if (!email) return "unauthorized";
+
+  const domain = email.toLowerCase();
+
+  if (domain.endsWith("@vitapstudent.ac.in")) return "student";
+  if (domain.endsWith("@vitap.ac.in")) return "club";
+
+  return "unauthorized";
 };
+
 
 export const googleSignIn = async () =>{
     try{
