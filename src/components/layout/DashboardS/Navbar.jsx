@@ -1,9 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa"
 import {Plus} from "lucide-react";
+import { logoutUser } from "@/firebase/auth";
 
 const Navbar = () => {
+  //Logout
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();   // Firebase sign out
+      navigate("/");        // Landing page
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };  
   return (
     <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md  z-50 border-b border-gray-200 h-18">
       <div className="flex-1">
@@ -78,7 +90,12 @@ const Navbar = () => {
                  <Link to="/settings">Settings</Link>
                 </li>
                 <li className="text-center">
-                   <Link to="/logout">Logout</Link>
+                    <span
+                      onClick={handleLogout}
+                      className="cursor-pointer text-red-500 hover:text-red-700"
+                    >
+                      Logout
+                    </span>
                 </li>
               </ul>
             </div>
