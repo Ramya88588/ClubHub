@@ -89,19 +89,19 @@ const ClubDashboard = () => {
     <div>
       <Navbar />
       <div className="mt-19 bg-[#f8f9fa] p-16">
-        <div>
+        <div className="">
           <p className="font-semibold text-[32px]">
             <span className="text-green-500 font-semibold text-[32px]">
               Coding Club
-            </span>{" "}
+            </span>
             Dashboard
           </p>
           <p>Manage your events and check your club performance</p>
         </div>
         <div className="flex gap-4 mt-10">
-          <div className="one  border-2 border-[#d9d9d9] shadow-sm rounded-2xl p-8 w-[30%]  bg-white">
+          <div className="one  border-2 border-[#d9d9d9] shadow-sm rounded-2xl pt-5 pl-5 w-[30%]  bg-white">
             <p className="font-medium text-[24px]">Club Info</p>
-            <div className="font-light text-[24px] p-3">
+            <div className="font-light p-3">
               <p>Name: Coding Club</p>
               <p>President: Sarah</p>
               <p>Members: 35</p>
@@ -109,22 +109,22 @@ const ClubDashboard = () => {
           </div>
           <Link to="/club/create-event" className="w-[25%]">
           <div className="two border border-[#d9d9d9] shadow-sm rounded-2xl p-8 w-full  bg-white flex flex-col items-center">
-            <Plus className="text-green-500 h-30 w-30" />
-            <span className="font-light text-[24px]">Create New Event</span>
+            <Plus className="text-green-500 h-20 w-20" />
+            <span className="font-light ">Create New Event</span>
           </div>
           </Link>
           <div className="three border-2 border-[#d9d9d9] shadow-sm rounded-2xl w-[30%]  justify-center bg-white flex flex-col font-light">
-            <div className="flex items-center gap-3 p-2 border-b justify-center text-[24px]">
+            <div className="flex items-center gap-3 p-2 border-b">
               {" "}
-              <BarChart3 className="w-9 h-10 text-yellow-500" />
+              <BarChart3 className="w-8 text-yellow-500" />
               View Analytics
             </div>
-            <div className="flex items-center p-2 text-[24px] justify-center gap-2 border-b">
-              <Users className="w-9 h-10 text-blue-500" />
+            <div className="flex items-center p-2 gap-2 border-b">
+              <Users className="w-8 text-blue-500" />
               Manage Members
             </div>
-            <div className="flex items-center p-2 justify-center gap-2 text-[24px] ">
-              <Send className="w-9 h-10 text-red-500" />
+            <div className="flex items-center p-2  gap-2 ">
+              <Send className="w-8  text-red-500" />
               Send Announcement
             </div>
           </div>

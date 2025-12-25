@@ -94,16 +94,16 @@ const EventDetailsPage = () => {
   if (!event) return <div className="p-10 text-center">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 md:p-12 font-sans animate-fade-in">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50 px-8 py-4 md:px-12 md:py-4 animate-fade-in ">
+      <div className="max-w-4xl mx-auto">
         {/* BACK BUTTON */}
         <button
           onClick={() => navigate(-1)}
           className="mb-6 flex items-center text-gray-500 hover:text-gray-900 transition-colors group "
         >
-          <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center mr-2 group-hover:bg-gray-100 transition-colors">
+          <div className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center mr-2 group-hover:bg-gray-100 transition-colors">
             <svg
-              className="w-4 h-4 text-gray-600"
+              className="w-3 h-3 text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -116,15 +116,15 @@ const EventDetailsPage = () => {
               />
             </svg>
           </div>
-          <span className="font-medium">Back to Events</span>
+          <span className="text-sm">Back to Events</span>
         </button>
 
         {/* MAIN GRID LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* LEFT COLUMN (Image & Desc) */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-4">
             {/* Main Image */}
-            <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 h-124 bg-gray-200 relative group">
+            <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 h-45 bg-gray-200 relative group">
               <img
                 src={event.image}
                 alt={event.title}
@@ -140,15 +140,15 @@ const EventDetailsPage = () => {
 
             {/* Header Section (Moved inside left column as per your layout) */}
             <div>
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3">
                 <span className="text-gray-500 text-sm font-medium">
                   by {event.organizer}
                 </span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 leading-tight">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 leading-tight">
                 {event.title}
               </h1>
-              <p className="text-gray-500 flex items-center gap-2 text-lg">
+              {/* <p className="text-gray-500 flex items-center gap-2 text-sm">
                 <svg
                   className="w-5 h-5 text-red-500"
                   viewBox="0 0 24 24"
@@ -157,7 +157,7 @@ const EventDetailsPage = () => {
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                 </svg>
                 {event.location}
-              </p>
+              </p> */}
             </div>
 
             {/* Description & Highlights */}
@@ -166,14 +166,14 @@ const EventDetailsPage = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">
                   About the Event
                 </h3>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line mb-8">
+                <p className="text-gray-600 leading-relaxed whitespace-pre-line mb-3 text-sm">
                   {event.description}
                 </p>
 
                 {/* Highlights Section */}
                 {event.highlights && event.highlights.length > 0 && (
-                  <div className="mt-8 pt-8 border-t border-gray-100">
-                    <h4 className="text-lg font-bold text-gray-900 mb-6">
+                  <div className="mt-5 pt-8 border-t border-gray-100">
+                    <h4 className="text-xl font-bold text-gray-900 mb-6">
                       Event Highlights
                     </h4>
 
@@ -213,7 +213,7 @@ const EventDetailsPage = () => {
             {/* REMOVED sticky top-8 here to fix scrolling issue */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               {/* Map Image at Top of Sidebar */}
-              <div className="h-60 bg-gray-100 relative group cursor-pointer">
+              <div className="h-30 bg-gray-100 relative group cursor-pointer">
                 <img
                   src={mapImg}
                   alt="Location Map"
@@ -234,17 +234,17 @@ const EventDetailsPage = () => {
                 </div>
               </div>
 
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">
+              <div className="p-3">
+                <h3 className="text-md font-bold text-gray-900 pb-2 border-b border-gray-100">
                   Event Details
                 </h3>
 
                 <div className="space-y-6">
                   {/* Date Row */}
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-2 mt-2">
                     <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
                       <svg
-                        className="w-6 h-6"
+                        className="w-5 h-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -257,21 +257,21 @@ const EventDetailsPage = () => {
                         />
                       </svg>
                     </div>
-                    <div>
+                    <div >
                       <p className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
                         Date
                       </p>
-                      <p className="text-gray-900 font-semibold text-base">
+                      <p className="text-gray-900 text-xs font-semibold">
                         {event.date}
                       </p>
                     </div>
                   </div>
 
                   {/* Time Row */}
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-2">
                     <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
                       <svg
-                        className="w-6 h-6"
+                        className="w-5 h-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -288,17 +288,17 @@ const EventDetailsPage = () => {
                       <p className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
                         Time
                       </p>
-                      <p className="text-gray-900 font-semibold text-base">
+                      <p className="text-gray-900 text-xs font-semibold">
                         {event.time}
                       </p>
                     </div>
                   </div>
 
                   {/* Location Row */}
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-2">
                     <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
                       <svg
-                        className="w-6 h-6 text-gray-600"
+                        className="w-5 h-5 text-gray-600"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                       >
@@ -309,17 +309,17 @@ const EventDetailsPage = () => {
                       <p className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
                         Location
                       </p>
-                      <p className="text-gray-900 font-semibold text-base">
+                      <p className="text-gray-900 text-xs font-semibold ">
                         {event.location}
                       </p>
                     </div>
                   </div>
 
                   {/* Club Row */}
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-2">
                     <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
                       <svg
-                        className="w-6 h-6"
+                        className="w-5 h-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -336,7 +336,7 @@ const EventDetailsPage = () => {
                       <p className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
                         Club
                       </p>
-                      <p className="text-gray-900 font-semibold text-base">
+                      <p className="text-gray-900 font-semibold text-xs">
                         {event.club}
                       </p>
                     </div>
@@ -345,27 +345,27 @@ const EventDetailsPage = () => {
 
                 {/* Action Button */}
                 {/* Action Section */}
-                <div className="mt-8 pt-6 border-t border-gray-100">
+                <div className="mt-2 pt-6 border-t border-gray-100">
                   <div className="flex flex-col gap-4">
                     {/* Registered Members */}
                     <div className="text-center">
                       <p className="text-sm text-gray-500">
                        Registered Members
                       </p>
-                      <p className="text-3xl font-extrabold text-gray-900">
+                      <p className="text-2xl font-extrabold text-gray-900">
                          {event.registeredMembers}
                       </p>
                     </div>
 
                     {/* Delete Button */}
-                    <button className="w-full py-3 bg-red-500 text-white rounded-xl font-bold text-lg hover:bg-red-600 transition active:scale-95 shadow">
+                    <button className="py-2 bg-red-500 text-white rounded-xl   hover:bg-red-600 transition active:scale-95 shadow">
                       Delete Event
                     </button>
 
                     {/* Edit Button */}
                     <button
                       onClick={() => navigate(`/club/edit-event/${event.id}`)}
-                      className="w-full py-3 border border-red-500 text-red-500 rounded-xl font-bold text-lg hover:bg-red-50 transition active:scale-95"
+                      className="py-2 border border-red-500 text-red-500 rounded-xl hover:bg-red-50 transition active:scale-95"
                     >
                       Edit Event
                     </button>
