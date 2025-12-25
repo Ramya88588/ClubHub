@@ -18,8 +18,8 @@ const Hero = () => {
           </p>
 
           <div className="btns flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <ButtonOutline text="Manage Your Club" url="/signup" />
-            <ButtonBg text="Explore Events" url="/signup" />
+            <ButtonOutline text="Manage Your Club" url="/signup1" />
+            <ButtonBg text="Explore Events" url="/signup1" />
           </div>
         </div>
       </div>

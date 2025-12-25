@@ -3,7 +3,7 @@ import bgImg from "@/assets/SignIn.png";
 import SingUpCard2 from '@/components/layout/Singup/SingUpCard2';
 import { Link } from 'react-router-dom';
 
-const SingupPage2 = () => {
+const SignupPage2 = () => {
   return (
     <div className="relative w-screen h-screen">
     <div className="absolute inset-0 w-full h-full bg-cover" style={{backgroundImage:`url(${bgImg})`}}>
@@ -20,5 +20,5 @@ const SingupPage2 = () => {
   )
 }
 
-export default SingupPage2
+export default SignupPage2
 

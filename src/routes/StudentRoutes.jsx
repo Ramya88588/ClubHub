@@ -2,9 +2,10 @@ import { Routes, Route } from "react-router-dom";
 
 import DashboardLayout from "@/components/layout/DashboardS/DashboardLayout";
 import StudentDashboard from "../pages/student/StudentDashboard";
-import MyEventsPage from "../pages/student/MyEventsPage";
-import EventPage from "../pages/public/EventsPage";
+import ClubInfo from "../pages/student/ClubInfo.jsx";
+import EventPage from "../pages/student/EventsPage";
 import ProfilePage from "../pages/student/ProfilePage";
+import EventDetailsPage from "@/pages/student/EventDetailsPage";
 
 export default function StudentRoutes() {
   return (
@@ -12,10 +13,12 @@ export default function StudentRoutes() {
       <Route element={<DashboardLayout />}>
         <Route index element={<StudentDashboard />} />
 
-        <Route path="my-events" element={<MyEventsPage />} />
-        <Route path="events" element={<EventPage />} />
+        <Route path="clubs" element={<ClubInfo/>} />
+        <Route path="events" element={<EventPage />}>
+        </Route>
         <Route path="profile" element={<ProfilePage />} />
       </Route>
+       <Route path="events/:id" element={<EventDetailsPage/>}/>
     </Routes>
   );
 }

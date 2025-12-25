@@ -14,7 +14,7 @@ const EventCard = ({ title, description, date, type, theme, variant = 'feedback'
   const colors = getThemeClasses(theme);
 
   return (
-    <div className="min-w- w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center hover:shadow-md transition-shadow duration-300 h-90">
+    <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center hover:shadow-md transition-shadow duration-300 h-90">
       
       {/* Image Area */}
       <div className="h-[50%] bg-gray-50 relative flex items-center justify-center border-b border-gray-100">
@@ -37,13 +37,13 @@ const EventCard = ({ title, description, date, type, theme, variant = 'feedback'
       </div>
 
       {/* Content Body */}
-      <div className="p-2 h-[40%] flex flex-col">
+      <div className="p-4 h-[40%] flex flex-col">
         <h3 className=" font-bold text-gray-900 mb-1">{title}</h3>
         <p className="text-sm font-light text-gray-500 line-clamp-2">{description}</p>
       </div>
 
       {/* Dynamic Footer */}
-      <div className="p-2 h-[15%] border-t flex items-center justify-between">
+      <div className="p-4 h-[15%] border-t flex items-center justify-between">
         <span className="text-xs text-gray-400 font-medium">On {date}</span>
         
        

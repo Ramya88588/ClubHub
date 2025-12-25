@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import Navigation Hook
 import EventCard from '@/components/shared/eventCard';
 
 const UpcomingEventsSection = () => {
-  // 1. EXTENDED MOCK DATA (Added 'club' field for filtering)
+  const navigate = useNavigate(); // 2. Initialize Navigation
+
+  // 1. EXTENDED MOCK DATA
   const allEvents = [
     { id: 1, type: "Workshop", club: "Coding Club", theme: "yellow", title: "React Patterns", description: "Advanced patterns for scaling apps.", date: "10/01/2026", image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=500&q=60" },
+    { id: 2, type: "Sports", club: "Sports Society", theme: "red", title: "Badminton Open", description: "Inter-college badminton championship.", date: "12/01/2026", image: "https://images.unsplash.com/photo-1626224583764-84786c713cd3?auto=format&fit=crop&w=500&q=60" },
     { id: 3, type: "Seminar", club: "Cloud Community", theme: "blue", title: "Cloud Computing", description: "AWS vs Azure vs GCP basics.", date: "15/01/2026", image: null },
     { id: 4, type: "Club", club: "Eco Warriors", theme: "green", title: "Eco-Club Meet", description: "Planning the campus tree plantation.", date: "18/01/2026", image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=500&q=60" },
     { id: 5, type: "Music", club: "Music Society", theme: "yellow", title: "Acoustic Night", description: "Unplugged sessions at the amphitheater.", date: "20/01/2026", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=500&q=60" },
+    { id: 6, type: "Tech", club: "Coding Club", theme: "blue", title: "Hackathon Prep", description: "Teaming up for the upcoming hackathon.", date: "22/01/2026", image: "https://images.unsplash.com/photo-1504384308090-c54be3855833?auto=format&fit=crop&w=500&q=60" },
     { id: 7, type: "Art", club: "Creative Arts", theme: "red", title: "Sketching 101", description: "Bring your pencils and creativity.", date: "25/01/2026", image: null },
     { id: 8, type: "Workshop", club: "Debate Club", theme: "yellow", title: "Public Speaking", description: "Overcoming stage fear.", date: "28/01/2026", image: "https://images.unsplash.com/photo-1475721027760-f75cf5cb941c?auto=format&fit=crop&w=500&q=60" },
     { id: 9, type: "Coding", club: "AI Enthusiasts", theme: "blue", title: "Python for AI", description: "Intro to libraries like Pandas and NumPy.", date: "30/01/2026", image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=60" },
@@ -22,7 +27,7 @@ const UpcomingEventsSection = () => {
     { id: 18, type: "Seminar", club: "Future Leaders", theme: "yellow", title: "Future of Work", description: "How AI is changing job markets.", date: "20/02/2026", image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=500&q=60" },
   ];
 
-  // Helper Arrays for Dropdowns
+  // Helper Arrays
   const eventTypes = ["Workshop", "Seminar", "Club", "Music", "Tech", "Art", "Sports", "Coding"];
   const clubNames = ["Coding Club", "Sports Society", "Music Society", "Creative Arts", "Eco Warriors", "Debate Club", "AI Enthusiasts", "Cloud Community"];
 
@@ -35,7 +40,7 @@ const UpcomingEventsSection = () => {
   const [clubFilter, setClubFilter] = useState('');
   
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; 
+  const itemsPerPage = 9; // 3. UPDATED to 9 items (3x3 grid)
 
   // 3. FILTER LOGIC
   const filteredEvents = allEvents.filter((event) => {
@@ -49,16 +54,13 @@ const UpcomingEventsSection = () => {
     // Club Logic
     const matchesClub = clubFilter === '' || event.club === clubFilter;
 
-    // Date Logic (Compare if event is AFTER or EQUAL to selected date)
+    // Date Logic
     let matchesDate = true;
     if (dateFilter) {
-      // Convert "DD/MM/YYYY" to JS Date Object
       const [day, month, year] = event.date.split('/');
-      // Note: Month is 0-indexed in JS Date
       const eventDateObj = new Date(year, month - 1, day);
       const filterDateObj = new Date(dateFilter);
       
-      // Reset hours to ensure pure date comparison
       eventDateObj.setHours(0,0,0,0);
       filterDateObj.setHours(0,0,0,0);
 
@@ -74,7 +76,7 @@ const UpcomingEventsSection = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentEvents = filteredEvents.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Reset to page 1 whenever filters change
+  // Reset to page 1
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, dateFilter, typeFilter, clubFilter]);
@@ -115,7 +117,7 @@ const UpcomingEventsSection = () => {
           </button>
         </div>
       </div>
-
+      
       {/* MAIN CONTAINER */}
       <div className="bg-white rounded-3xl p-10 shadow-sm border border-gray-100">
         
@@ -127,14 +129,7 @@ const UpcomingEventsSection = () => {
           
           {/* Filter Controls Group */}
           <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto items-center">
-            {(dateFilter || typeFilter || clubFilter) && (
-              <button 
-                onClick={clearFilters}
-                className="text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors"
-              >
-                All
-              </button>
-            )}
+            
             {/* 1. Date Picker */}
             <div className="relative w-full sm:w-auto">
                <input 
@@ -155,7 +150,7 @@ const UpcomingEventsSection = () => {
                 onChange={(e) => setTypeFilter(e.target.value)}
                 className="appearance-none w-full sm:w-40 pl-4 pr-10 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                <option value="">Type</option>
+                <option value="">Any Type</option>
                 {eventTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
@@ -170,9 +165,9 @@ const UpcomingEventsSection = () => {
               <select 
                 value={clubFilter}
                 onChange={(e) => setClubFilter(e.target.value)}
-                className="appearance-none sm:w-48 pl-4 pr-10 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
+                className="appearance-none w-full sm:w-48 pl-4 pr-10 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                <option value="">Club</option>
+                <option value="">Any Club</option>
                 {clubNames.map(club => (
                   <option key={club} value={club}>{club}</option>
                 ))}
@@ -183,7 +178,14 @@ const UpcomingEventsSection = () => {
             </div>
 
             {/* Clear Filters Link */}
-            
+            {(dateFilter || typeFilter || clubFilter) && (
+              <button 
+                onClick={clearFilters}
+                className="text-sm text-gray-500 hover:text-gray-800 font-medium underline decoration-gray-300 underline-offset-4 transition-colors"
+              >
+                Clear all
+              </button>
+            )}
           </div>
         </div>
 
@@ -191,7 +193,11 @@ const UpcomingEventsSection = () => {
         {currentEvents.length > 0 ? (
           <div className="flex flex-wrap gap-12 mb-12 px-4">
             {currentEvents.map((event) => (
-              <div key={event.id}>
+              <div 
+                key={event.id}
+                onClick={() => navigate(`/events/${event.id}`)} // 4. Navigation Handler
+                className="cursor-pointer transition-transform hover:scale-[1.01] duration-200"
+              >
                 <EventCard 
                   {...event}
                   variant="details"

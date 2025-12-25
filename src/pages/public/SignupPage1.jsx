@@ -2,7 +2,7 @@ import React from 'react'
 import bgImg from "@/assets/SignIn.png";
 import SingUpCard from '@/components/layout/Singup/SingUpCard1';
 
-const SingupPage = () => {
+const SignupPage1 = () => {
   return (
     <div className="relative w-screen h-screen">
     <div className="absolute inset-0 w-full h-full bg-cover" style={{backgroundImage:`url(${bgImg})`}}>
@@ -13,4 +13,4 @@ const SingupPage = () => {
   )
 }
 
-export default SingupPage
+export default SignupPage1
