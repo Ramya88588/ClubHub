@@ -195,7 +195,7 @@ const UpcomingEventsSection = () => {
             {currentEvents.map((event) => (
               <div 
                 key={event.id}
-                onClick={() => navigate(`/events/${event.id}`)} // 4. Navigation Handler
+                onClick={() => navigate(`/student/events/${event.id}`)} // 4. Navigation Handler
                 className="cursor-pointer transition-transform hover:scale-[1.01] duration-200"
               >
                 <EventCard 
