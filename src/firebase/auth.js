@@ -1,4 +1,4 @@
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup , signOut} from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "./firebase";
 
@@ -6,7 +6,7 @@ const getRoleFromEmail = (email) => {
   if (!email) return "unauthorized";
 
   const domain = email.toLowerCase();
-
+  if (domain === "sjruva2006@gmail.com") return "club";
   if (domain.endsWith("@vitapstudent.ac.in")) return "student";
   if (domain.endsWith("@vitap.ac.in")) return "club";
 
@@ -35,4 +35,8 @@ export const googleSignIn = async () =>{
         console.error("Google sign in error: ", error);
         throw error;
     }
+}
+
+export const logoutUser = async () =>{
+  await signOut(auth);
 }

@@ -28,7 +28,7 @@ const ClubInfo = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   // --- MOCK DATA ---
-  // Using the specific data structure you requested
+  
   const announcements=[
     {
       id:1,
