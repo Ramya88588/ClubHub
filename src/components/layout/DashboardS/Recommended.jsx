@@ -99,7 +99,7 @@ const RecommendedSection = () => {
       >
         {recommendations.map((event) => (
           <EventCard 
-            key={event.id}
+            key={event.clubId}
             {...event}
             variant="details" // <--- THIS SWITCHES THE UI TO ARROW STYLE
           />

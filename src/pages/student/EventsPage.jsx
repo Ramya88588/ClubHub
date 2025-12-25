@@ -1,39 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'; // 1. Import Navigation Hook
 import EventCard from '@/components/shared/eventCard';
-
+import { getUpcomingEvents } from '@/firebase/collections';
 const UpcomingEventsSection = () => {
+  // 1. EXTENDED MOCK DATA (Added 'club' field for filtering)
+  // const allEvents = [
+  //   { id: 1, type: "Workshop", club: "Coding Club", theme: "yellow", title: "React Patterns", description: "Advanced patterns for scaling apps.", date: "10/01/2026", image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 3, type: "Seminar", club: "Cloud Community", theme: "blue", title: "Cloud Computing", description: "AWS vs Azure vs GCP basics.", date: "15/01/2026", image: null },
+  //   { id: 4, type: "Club", club: "Eco Warriors", theme: "green", title: "Eco-Club Meet", description: "Planning the campus tree plantation.", date: "18/01/2026", image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 5, type: "Music", club: "Music Society", theme: "yellow", title: "Acoustic Night", description: "Unplugged sessions at the amphitheater.", date: "20/01/2026", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 7, type: "Art", club: "Creative Arts", theme: "red", title: "Sketching 101", description: "Bring your pencils and creativity.", date: "25/01/2026", image: null },
+  //   { id: 8, type: "Workshop", club: "Debate Club", theme: "yellow", title: "Public Speaking", description: "Overcoming stage fear.", date: "28/01/2026", image: "https://images.unsplash.com/photo-1475721027760-f75cf5cb941c?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 9, type: "Coding", club: "AI Enthusiasts", theme: "blue", title: "Python for AI", description: "Intro to libraries like Pandas and NumPy.", date: "30/01/2026", image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 10, type: "Music", club: "Music Society", theme: "yellow", title: "Battle of Bands", description: "The ultimate rock showdown.", date: "02/02/2026", image: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 11, type: "Seminar", club: "CyberSafe", theme: "blue", title: "Cyber Security", description: "Protecting assets in the digital age.", date: "05/02/2026", image: null },
+  //   { id: 12, type: "Club", club: "Eco Warriors", theme: "green", title: "Gardening Hour", description: "Weekly maintenance of the botanical garden.", date: "08/02/2026", image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 13, type: "Sports", club: "Sports Society", theme: "red", title: "Football Finals", description: "The big game at the main stadium.", date: "10/02/2026", image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 14, type: "Workshop", club: "Placement Cell", theme: "yellow", title: "Resume Building", description: "Crafting the perfect CV for internships.", date: "12/02/2026", image: null },
+  //   { id: 15, type: "Tech", club: "Crypto Club", theme: "blue", title: "Blockchain 101", description: "Understanding decentralized ledgers.", date: "14/02/2026", image: "https://images.unsplash.com/photo-1644361566696-3d442b5b482a?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 16, type: "Art", club: "Creative Arts", theme: "red", title: "Pottery Workshop", description: "Hands-on clay modeling session.", date: "16/02/2026", image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=500&q=60" },
+  //   { id: 17, type: "Coding", club: "Coding Club", theme: "blue", title: "LeetCode Grind", description: "Solving hard problems together.", date: "18/02/2026", image: null },
+  //   { id: 18, type: "Seminar", club: "Future Leaders", theme: "yellow", title: "Future of Work", description: "How AI is changing job markets.", date: "20/02/2026", image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=500&q=60" },
+  // ];
   const navigate = useNavigate(); // 2. Initialize Navigation
 
-  // 1. EXTENDED MOCK DATA
-  const allEvents = [
-    { id: 1, type: "Workshop", club: "Coding Club", theme: "yellow", title: "React Patterns", description: "Advanced patterns for scaling apps.", date: "10/01/2026", image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=500&q=60" },
-    { id: 2, type: "Sports", club: "Sports Society", theme: "red", title: "Badminton Open", description: "Inter-college badminton championship.", date: "12/01/2026", image: "https://images.unsplash.com/photo-1626224583764-84786c713cd3?auto=format&fit=crop&w=500&q=60" },
-    { id: 3, type: "Seminar", club: "Cloud Community", theme: "blue", title: "Cloud Computing", description: "AWS vs Azure vs GCP basics.", date: "15/01/2026", image: null },
-    { id: 4, type: "Club", club: "Eco Warriors", theme: "green", title: "Eco-Club Meet", description: "Planning the campus tree plantation.", date: "18/01/2026", image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=500&q=60" },
-    { id: 5, type: "Music", club: "Music Society", theme: "yellow", title: "Acoustic Night", description: "Unplugged sessions at the amphitheater.", date: "20/01/2026", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=500&q=60" },
-    { id: 6, type: "Tech", club: "Coding Club", theme: "blue", title: "Hackathon Prep", description: "Teaming up for the upcoming hackathon.", date: "22/01/2026", image: "https://images.unsplash.com/photo-1504384308090-c54be3855833?auto=format&fit=crop&w=500&q=60" },
-    { id: 7, type: "Art", club: "Creative Arts", theme: "red", title: "Sketching 101", description: "Bring your pencils and creativity.", date: "25/01/2026", image: null },
-    { id: 8, type: "Workshop", club: "Debate Club", theme: "yellow", title: "Public Speaking", description: "Overcoming stage fear.", date: "28/01/2026", image: "https://images.unsplash.com/photo-1475721027760-f75cf5cb941c?auto=format&fit=crop&w=500&q=60" },
-    { id: 9, type: "Coding", club: "AI Enthusiasts", theme: "blue", title: "Python for AI", description: "Intro to libraries like Pandas and NumPy.", date: "30/01/2026", image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=60" },
-    { id: 10, type: "Music", club: "Music Society", theme: "yellow", title: "Battle of Bands", description: "The ultimate rock showdown.", date: "02/02/2026", image: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&w=500&q=60" },
-    { id: 11, type: "Seminar", club: "CyberSafe", theme: "blue", title: "Cyber Security", description: "Protecting assets in the digital age.", date: "05/02/2026", image: null },
-    { id: 12, type: "Club", club: "Eco Warriors", theme: "green", title: "Gardening Hour", description: "Weekly maintenance of the botanical garden.", date: "08/02/2026", image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=500&q=60" },
-    { id: 13, type: "Sports", club: "Sports Society", theme: "red", title: "Football Finals", description: "The big game at the main stadium.", date: "10/02/2026", image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=500&q=60" },
-    { id: 14, type: "Workshop", club: "Placement Cell", theme: "yellow", title: "Resume Building", description: "Crafting the perfect CV for internships.", date: "12/02/2026", image: null },
-    { id: 15, type: "Tech", club: "Crypto Club", theme: "blue", title: "Blockchain 101", description: "Understanding decentralized ledgers.", date: "14/02/2026", image: "https://images.unsplash.com/photo-1644361566696-3d442b5b482a?auto=format&fit=crop&w=500&q=60" },
-    { id: 16, type: "Art", club: "Creative Arts", theme: "red", title: "Pottery Workshop", description: "Hands-on clay modeling session.", date: "16/02/2026", image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=500&q=60" },
-    { id: 17, type: "Coding", club: "Coding Club", theme: "blue", title: "LeetCode Grind", description: "Solving hard problems together.", date: "18/02/2026", image: null },
-    { id: 18, type: "Seminar", club: "Future Leaders", theme: "yellow", title: "Future of Work", description: "How AI is changing job markets.", date: "20/02/2026", image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=500&q=60" },
-  ];
-
-  // Helper Arrays
-  const eventTypes = ["Workshop", "Seminar", "Club", "Music", "Tech", "Art", "Sports", "Coding"];
-  const clubNames = ["Coding Club", "Sports Society", "Music Society", "Creative Arts", "Eco Warriors", "Debate Club", "AI Enthusiasts", "Cloud Community"];
 
   // 2. STATE MANAGEMENT
   const [searchTerm, setSearchTerm] = useState('');
-  
+  const [allEvents, setAllEvents] = useState([]);
+  // Loading state
+  const [loading, setLoading] = useState(true);
   // New Filter States
   const [dateFilter, setDateFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -42,7 +38,25 @@ const UpcomingEventsSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9; // 3. UPDATED to 9 items (3x3 grid)
 
-  // 3. FILTER LOGIC
+  //Fetching firestore users
+  useEffect(()=>{
+    const fetchEvents = async()=>{
+      const data = await getUpcomingEvents();
+      setAllEvents(data);
+      setLoading(false);
+      
+    };
+    fetchEvents();
+  },[]);
+
+
+  // 3. FILTER 
+
+  //filter data (Helper Arrays for Dropdowns)
+  const eventTypes = ["Workshop", "Seminar", "Club", "Music", "Tech", "Art", "Sports", "Coding"];
+  const clubNames = ["Coding Club", "Sports Society", "Music Society", "Creative Arts", "Eco Warriors", "Debate Club", "AI Enthusiasts", "Cloud Community"];
+
+  // Filter logic
   const filteredEvents = allEvents.filter((event) => {
     // Search Logic
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -52,7 +66,7 @@ const UpcomingEventsSection = () => {
     const matchesType = typeFilter === '' || event.type === typeFilter;
 
     // Club Logic
-    const matchesClub = clubFilter === '' || event.club === clubFilter;
+    const matchesClub = clubFilter === '' || event.clubname === clubFilter;
 
     // Date Logic
     let matchesDate = true;

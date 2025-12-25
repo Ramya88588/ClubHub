@@ -43,3 +43,25 @@ export const getStudentUpcomingEvents = async (studentUid)=>{
         return [];
     }
 }
+
+
+/* Upcoming events - not registered + registered (events page) */
+
+export const getUpcomingEvents = async ()=>{
+    try{
+        const q = query(
+            collection(db, "events"),
+            where("status", "==", "upcoming")
+        )
+        const snapshot = await getDocs(q);
+
+        return snapshot.docs.map(doc =>({
+            id: doc.id,
+            ...doc.data(),
+        }))
+    }catch(error){
+        console.log("Error fetching all the upcoming events: ", error);
+        return[];
+    }
+
+}
