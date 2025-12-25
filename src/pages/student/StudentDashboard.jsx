@@ -1,55 +1,86 @@
 
 import RecommendedSection from '@/components/layout/DashboardS/Recommended'
 import EventCard from '@/components/shared/eventCard'
-import React,{useRef} from 'react'
+
+import React,{ useEffect, useState, useRef } from 'react'
+import { getStudentPastEvents } from '@/firebase/collections'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/firebase/firebase'
+
+
 
 const StudentDashboard = () => {
+
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);   
+
+  
   const handleFeedback=()=>{
      return <h1>FeedBack form</h1>
   }
   const scrollContainerRef = useRef(null);
-  const events = [
-    {
-      id: 1,
-      type: "Workshop",
-      theme: "yellow",
-      title: "Intro to UI/UX",
-      description: "A deep dive into user interface principles.",
-      date: "12/10/2025"
-    },
-    {
-      id: 2,
-      type: "Hackathon",
-      theme: "red",
-      title: "CodeRed 2025",
-      description: "24-hour coding marathon for developers.",
-      date: "15/10/2025"
-    },
-    {
-      id: 3,
-      type: "Seminar",
-      theme: "blue",
-      title: "AI in 2029",
-      description: "Discussing the future of Generative AI.",
-      date: "20/11/2025"
-    },
-    {
-      id: 4,
-      type: "Meetup",
-      theme: "green",
-      title: "Green Tech",
-      description: "Networking event for sustainable tech enthusiasts.",
-      date: "05/12/2025"
-    },
-    {
-      id: 5,
-      type: "Workshop",
-      theme: "yellow",
-      title: "Advanced React",
-      description: "Scaling applications in enterprise environments.",
-      date: "10/01/2026"
-    }
-  ];
+  // const events = [
+  //   {
+  //     id: 1,
+  //     type: "Workshop",
+  //     theme: "yellow",
+  //     title: "Intro to UI/UX",
+  //     description: "A deep dive into user interface principles.",
+  //     date: "12/10/2025"
+  //   },
+  //   {
+  //     id: 2,
+  //     type: "Hackathon",
+  //     theme: "red",
+  //     title: "CodeRed 2025",
+  //     description: "24-hour coding marathon for developers.",
+  //     date: "15/10/2025"
+  //   },
+  //   {
+  //     id: 3,
+  //     type: "Seminar",
+  //     theme: "blue",
+  //     title: "AI in 2029",
+  //     description: "Discussing the future of Generative AI.",
+  //     date: "20/11/2025"
+  //   },
+  //   {
+  //     id: 4,
+  //     type: "Meetup",
+  //     theme: "green",
+  //     title: "Green Tech",
+  //     description: "Networking event for sustainable tech enthusiasts.",
+  //     date: "05/12/2025"
+  //   },
+  //   {
+  //     id: 5,
+  //     type: "Workshop",
+  //     theme: "yellow",
+  //     title: "Advanced React",
+  //     description: "Scaling applications in enterprise environments.",
+  //     date: "10/01/2026"
+  //   }
+  // ];
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        console.log("No user logged in yet");
+        return;
+      }
+
+      console.log("User ready:", user.uid);
+
+      const data = await getStudentPastEvents(user.uid);
+      console.log("Fetched events:", data);
+      setEvents(data);
+      setLoading(false);
+    });
+      return () => unsubscribe(); // cleanup on unmount
+  }, []);
+  if(loading){
+    return<p className="p-10">Loading past events...</p>;
+  }
+
  // Scroll 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
@@ -72,7 +103,7 @@ const StudentDashboard = () => {
         <span className="font-light">Upcoming Events</span>
        </div>
        <div className="eA text-green-500 flex flex-col items-center">
-        <p className="text-[36px]">5</p>
+        <p className="text-[36px]">{events.length}</p>
         <span className="font-light"> Events Attended</span>
        </div>
        <div className="cH text-yellow-500 flex flex-col items-center">
