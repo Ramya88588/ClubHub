@@ -10,7 +10,7 @@ const getThemeClasses = (theme) => {
   return variants[theme] || variants.blue;
 };
 
-const EventCard = ({ title, description, date, type, theme, variant = 'feedback' ,image}) => {
+const EventCard = ({title, description, date, type, theme, variant = 'feedback' ,image,showAnalytics = false}) => {
   const colors = getThemeClasses(theme);
 
   return (
@@ -47,24 +47,40 @@ const EventCard = ({ title, description, date, type, theme, variant = 'feedback'
         <span className="text-xs text-gray-400 font-medium">On {date}</span>
         
        
-        {variant === 'feedback' ? (
-          // Option A: Feedback Button
-          <button className={`px-4 py-2 rounded-lg text-sm text-white transition-colors ${theme === 'yellow' ? 'bg-yellow-400 hover:bg-yellow-500' : theme === 'red' ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'}`}>
-            Feedback
-          </button>
-        ) : (
-          // Option B: Blue Arrow (for Recommended)
-          <button className="p-2 hover:bg-blue-50 rounded-full transition-colors group">
-            <svg 
-              className="w-5 h-5 text-blue-500 group-hover:translate-x-1 transition-transform" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        )}
+        {showAnalytics ? (
+    // ✅ Analytics Button (Past Events)
+   <button className={`px-4 py-2 rounded-lg text-sm text-white transition-colors 
+        ${theme === "yellow"
+          ? "bg-yellow-400 hover:bg-yellow-500"
+          : theme === "red"
+          ? "bg-red-500 hover:bg-red-600"
+          : "bg-blue-500 hover:bg-blue-600"}`}>
+        Analytics
+      </button>
+  ) : (
+    // ✅ Default behavior (Existing)
+    variant === "feedback" ? (
+      <button className={`px-4 py-2 rounded-lg text-sm text-white transition-colors 
+        ${theme === "yellow"
+          ? "bg-yellow-400 hover:bg-yellow-500"
+          : theme === "red"
+          ? "bg-red-500 hover:bg-red-600"
+          : "bg-blue-500 hover:bg-blue-600"}`}>
+        Feedback
+      </button>
+    ) : (
+      <button className="p-2 hover:bg-blue-50 rounded-full transition-colors group">
+        <svg
+          className="w-5 h-5 text-blue-500 group-hover:translate-x-1 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+      </button>
+    )
+  )}
       </div>
     </div>
   );

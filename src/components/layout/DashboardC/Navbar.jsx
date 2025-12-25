@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa"
-import {Plus} from "lucide-react";
 
 const Navbar = () => {
   return (
@@ -47,20 +46,20 @@ const Navbar = () => {
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1 gap-3">
           <li>
-            <Link to="/student">Dashboard</Link>
+            <Link to="/club">Dashboard</Link>
           </li>
           <li>
-            <Link to="/student/events">Events</Link>
+            <Link to="/club/draftEvents">Draft Events</Link>
           </li>
           <li className="active:bg-transparent hover:bg-transparent">
-            <Link to="/student/clubs">Clubs</Link>
+            <Link to="/club/members">Members</Link>
           </li>
           <li className="bg-red-500/25 rounded-full w-fit flex items-center justify-center active:bg-transparent">
             <span className="material-symbols-outlined text-red-500">
               notifications_unread
             </span>
           </li>
-          <li className="bg-blue-500/25 rounded-xl w-20 flex items-center justify-center " >
+          <li className="bg-green-500/25 rounded-xl w-20 flex items-center justify-center " >
             <div className="dropdown dropdown-bottom dropdown-end focus:outline-none focus:ring-0 hover:bg-transparent">
               <div tabIndex={0} role="button"   className="flex items-center">
               <div className="rounded-full bg-white p-1">
@@ -72,13 +71,13 @@ const Navbar = () => {
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
               >
                 <li  className="text-center">
-                  <Link to="/profile">Profile</Link>
+                  <Link to="/profilePage">Profile</Link>
                 </li>
                 <li className="text-center">
-                 <Link to="/settings">Settings</Link>
+                 <Link to="/logout">Settings</Link>
                 </li>
                 <li className="text-center">
-                   <Link to="/logout">Logout</Link>
+                   <Link to="/settings">Logout</Link>
                 </li>
               </ul>
             </div>
