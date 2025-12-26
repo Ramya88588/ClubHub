@@ -65,3 +65,21 @@ export const getUpcomingEvents = async ()=>{
     }
 
 }
+
+// Get single event by ID
+export const getEventById = async (eventId) => {
+  try {
+    const ref = doc(db, "events", eventId);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      return { id: snap.id, ...snap.data() };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("getEventById error:", error);
+    throw error;
+  }
+};
+
