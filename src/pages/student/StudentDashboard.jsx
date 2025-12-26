@@ -129,6 +129,7 @@ const StudentDashboard = () => {
            {events.map((event) => (
          event.isRegistered && <EventCard 
             key={event.id}
+            variant="details" 
             {...event}
             path={`/student/events/${event.id}`}
 
@@ -172,6 +173,7 @@ const StudentDashboard = () => {
         {events.map((event) => (
          !event.isRegistered && <EventCard 
             key={event.id}
+           
             {...event}
             path={`/student/events/${event.id}`}
 
