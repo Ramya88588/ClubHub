@@ -22,11 +22,12 @@ export const googleSignIn = async () =>{
         const snap = await getDoc(userRef);
         if(!snap.exists()){
             const role = getRoleFromEmail(user.email);
+            const dateObj = new Date(Date.now());
             await setDoc(userRef, {
                 uid: user.uid,
                 email: user.email,
                 role,
-                createdAt: Date.now(),
+                createdAt: dateObj.toUTCString(),
             });
             return {...user, role};
         }
