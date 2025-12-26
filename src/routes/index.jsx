@@ -5,12 +5,14 @@ import StudentRoutes from "./StudentRoutes";
 import ClubRoutes from "./ClubRoutes";
 import AdminRoutes from "./AdminRoutes";
 import PrivateRoute from "./PrivateRoute";
+import NotFoundPage from "@/pages/public/NotFoundPage";
 
 export default function AppRoutes() {
   return (
     <Routes>
-  
+     
       <Route path="/*" element={<PublicRoutes />} />
+      
 
       <Route
         path="/student/*"
@@ -38,6 +40,7 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
+     
     </Routes>
   );
 }

@@ -1,8 +1,9 @@
-import { Link , useNavigate} from "react-router-dom";
+import { NavLink ,Link, useNavigate} from "react-router-dom";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa"
 import {Plus} from "lucide-react";
 import { logoutUser } from "@/firebase/auth";
+import NavItem from "@/components/shared/NavItem";
 
 const Navbar = () => {
   //Logout
@@ -59,13 +60,13 @@ const Navbar = () => {
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1 gap-3">
           <li>
-            <Link to="/student">Dashboard</Link>
+               <NavItem to="/student" label="Dashboard" activeColor="blue" />
           </li>
           <li>
-            <Link to="/student/events">Events</Link>
+            <NavItem to="/student/events" label="Events" activeColor="blue" />
           </li>
-          <li className="active:bg-transparent hover:bg-transparent">
-            <Link to="/student/clubs">Clubs</Link>
+          <li>
+           <NavItem to="/student/clubs" label="Clubs" activeColor="blue" />
           </li>
           <li className="bg-red-500/25 rounded-full w-fit flex items-center justify-center active:bg-transparent">
             <span className="material-symbols-outlined text-red-500">
