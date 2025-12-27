@@ -1,38 +1,72 @@
 import {
   Upload,
   Plus,
-  ListChecks,
+  //ListChecks,
   ClipboardEdit,
   Building2,
   CalendarClock,
 } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useNavigate } from "react-router";
-const formatIndianDateTime = (date, time) => {
-  const d = new Date(`${date}T${time}`);
+import { useEffect } from "react";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
+import { db } from "@/firebase/firebase";
+import { getUserById } from "@/firebase/collections";
+import { auth } from "@/firebase/firebase";
+//helpers
 
+const buildDateTime = (date, time) =>
+  date && time ? new Date(`${date}T${time}`) : null;
+
+// const formatIndianDateTime = (date, time) => {
+//   const d = new Date(`${date}T${time}`);
+
+//   const day = String(d.getDate()).padStart(2, "0");
+//   const month = String(d.getMonth() + 1).padStart(2, "0");
+//   const year = d.getFullYear();
+
+//   let hours = d.getHours();
+//   const minutes = String(d.getMinutes()).padStart(2, "0");
+//   const ampm = hours >= 12 ? "PM" : "AM";
+
+//   hours = hours % 12 || 12;
+
+//   return `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
+// };
+
+const formatDate = (date) => {
+  const d = new Date(date);
   const day = String(d.getDate()).padStart(2, "0");
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const year = d.getFullYear();
-
+  return `${day}/${month}/${year}`;
+};
+const formatTime = (date, time) => {
+  const d = new Date(`${date}T${time}`);
   let hours = d.getHours();
   const minutes = String(d.getMinutes()).padStart(2, "0");
   const ampm = hours >= 12 ? "PM" : "AM";
-
   hours = hours % 12 || 12;
-
-  return `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
+  return `${hours}:${minutes} ${ampm}`;
 };
-
 export default function CreateEventPage() {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     control,
     watch,
-    formState: { errors },
-  } = useForm({
+    setValue,
+    formState: { isValid },
+    } = useForm({
+    mode: "onChange",
     defaultValues: {
+      category: "",
       highlights: [""],
     },
   });
@@ -41,43 +75,136 @@ export default function CreateEventPage() {
     control,
     name: "highlights",
   });
+  /* ---------------- RESTORE LOCAL DRAFT ---------------- */
+	useEffect(() => {
+		const saved = localStorage.getItem("eventDraft");
+		if (!saved) return;
 
-  const onSubmit = (data) => {
-    // 🔥 Convert to clean JSON (Firebase ready)
-    const eventPayload = {
-      eventTitle: data.title,
-      category: data.category,
-      description: data.description,
-      highlights: data.highlights.filter(Boolean),
+		const data = JSON.parse(saved);
+
+		// const allowedCategories = [
+		// 	"Technical",
+		// 	"Workshop",
+		// 	"Music",
+		// 	"Cultural",
+    //   "Seminar"
+		// ];
+    const allowedCategories = [
+      "Workshop",
+      "Seminar",
+      "Club",
+      "Music",
+      "Tech",
+      "Art",
+      "Sports",
+      "Hackathon",
+    ];
+
+		Object.entries(data).forEach(([key, value]) => {
+			if (key === "category") {
+				if (allowedCategories.includes(value)) {
+					setValue("category", value);
+				} else {
+					setValue("category", "");
+				}
+			} else {
+				setValue(key, value);
+			}
+		});
+	}, [setValue]);
+
+  /* ---------------- AUTOSAVE LOCAL DRAFT ---------------- */
+  const watched = watch();
+  useEffect(() => {
+    localStorage.setItem("eventDraft", JSON.stringify(watched));
+  }, [watched]);
+
+  const onSubmit = async (formData) => {
+    const startDateTime = buildDateTime(formData.startDate, formData.startTime);
+    let endDateTime = buildDateTime(formData.endDate, formData.endTime);
+
+    if (endDateTime <= startDateTime) {
+      endDateTime.setDate(endDateTime.getDate() + 1);
+    }
+
+    // Get logged-in user
+    const user = auth.currentUser;
+    if (!user) {
+      alert("User not logged in");
+      return;
+    }
+
+    // Get club data from users collection
+    const clubUser = await getUserById(user.uid);
+
+    if (!clubUser || clubUser.role !== "club") {
+      alert("Only club accounts can create events");
+      return;
+    }
+    const eventTypeThemeMap = {
+      Workshop: "yellow",
+      Seminar: "blue",
+      Club: "green",
+      Music: "red",
+      Tech: "blue",
+      Coding: "blue",
+      Art: "yellow",
+      Sports: "green",
+      Hackathon: "yellow"
+    };
+    // payload
+    const payload = {
+      clubId: clubUser.uid,          
+      clubName: clubUser.clubname,   
+      head: clubUser.clubname,
+
+      title: formData.title,
+      type: formData.category,
+      description: formData.description,
+
+      highlights: formData.highlights.filter(Boolean),
+
+      image: "https://picsum.photos/seed/event/600/400",
 
       location: {
-        venue: data.venue,
-        college: data.college,
-        area: data.area,
+        venue: formData.venue,
+        college: formData.college,
+        area: formData.area,
       },
+
+      date: formatDate(formData.startDate),
+
+      startDateTime,
+      endDateTime,
 
       time: {
-        start: formatIndianDateTime(data.startDate, data.startTime),
-        end: formatIndianDateTime(data.endDate, data.endTime),
+        start: formatTime(formData.startDate, formData.startTime),
+        end: formatTime(formData.endDate, formData.endTime),
       },
 
-      coverImage: data.coverImage?.[0]?.name || null,
-      feedbackFormLink: data.feedbackFormLink || null,
+      registeredUsers: [],       
+      status: "upcoming",        
 
-      createdAt: new Date().toISOString(),
-      status: "published",
+      theme :eventTypeThemeMap[formData.category] || "green",
+
+      feedbackFormLink: formData.feedbackFormLink,
+
+      createdAt: serverTimestamp(),
     };
 
-    console.log("EVENT JSON (send to Firebase):");
-    console.log(JSON.stringify(eventPayload, null, 2));
+    await addDoc(collection(db, "events"), payload);
+
+    localStorage.removeItem("eventDraft");
+    alert("✅ Event published successfully");
+    navigate(-1);
   };
-  const navigate = useNavigate();
   const handleBack = () => {
     navigate(-1);
   };
 
   return (
     <div className="bg-[#f8f9fa]">
+      
       {/* Header */}
       <div className="flex justify-between items-center bg-white p-4 border-b shadow-sm top-0 sticky">
         <button type="button" className="" onClick={handleBack}>
@@ -85,16 +212,31 @@ export default function CreateEventPage() {
         </button>
 
         <div className="flex items-center gap-4">
-          <button type="button" className="">
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.removeItem("eventDraft");
+              navigate(-1);
+            }}
+          >
             Cancel
           </button>
-          <div className="flex  gap-2 w-fit bg-green-500 text-white px-4 py-1.5 rounded">
-            <Upload />
-            <button type="submit">Publish</button>
-          </div>
+            <button
+              type="submit"
+              form="create-event-form"
+              disabled={!isValid}
+              className={`flex gap-2 px-4 py-2 rounded ${
+                isValid
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-300 cursor-not-allowed"
+              }`}
+            >
+              <Upload /> Publish
+            </button>
         </div>
       </div>
       <form
+        id="create-event-form"
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-6xl mx-auto p-6 space-y-6 bg-[#f8f9fa]"
       >
@@ -117,25 +259,40 @@ export default function CreateEventPage() {
             />
             <label className="font-light text-[16px]">CATEGORY</label>
             <select
-              {...register("category")}
+              {...register("category", { required: true })}
               className="w-full border px-3 py-2 rounded bg-[#f8f9fa] font-light text-gray-500/85 text-[16px]"
             >
-              <option value="" className="" selected disabled>
+              <option value="" disabled>
                 Select Category
               </option>
-              <option value="Technical" className="font-normal text-black">
-                Technical
+              <option value="Hackathon" className="font-normal text-black">
+                Hackathon
               </option>
               <option value="Workshop" className="font-normal text-black">
                 Workshop
               </option>
-              <option value="Cultural" className="font-normal text-black ">
-                Cultural
+              <option value="Seminar" className="font-normal text-black">
+                Seminar
+              </option>
+              <option value="Club" className="font-normal text-black ">
+                Club
+              </option>
+              <option value="Music" className="font-normal text-black ">
+                Music
+              </option>
+              <option value="Tech" className="font-normal text-black ">
+                Tech
+              </option>
+              <option value="Art" className="font-normal text-black ">
+                Art
+              </option>
+              <option value="Sports" className="font-normal text-black ">
+                Sports
               </option>
             </select>
             <label className="font-light text-[16px]">DESCRIPTION</label>
             <textarea
-              {...register("description")}
+              {...register("description", { required: true })}
               placeholder="Describe the event agenda, prerequisites and goals..."
               className="w-full border px-3 py-2 rounded min-h-[100px] bg-[#f8f9fa] text-[16px] placeholder:font-light"
             />
@@ -186,19 +343,19 @@ export default function CreateEventPage() {
 
               <label className="font-light text-[16px]">VENUE</label>
               <input
-                {...register("venue")}
+                {...register("venue", { required: true })}
                 placeholder="Eg, Newton Hall"
                 className="w-full text-[16px] placeholder:font-ligjt border px-3 py-2 rounded bg-[#f8f9fa]"
               />
               <label className="font-light text-[16px]">COLLEGE</label>
               <input
-                {...register("college")}
+                {...register("college", { required: true })}
                 placeholder="Eg, VIT-AP"
                 className="w-full border px-3 py-2 text-[16px] font-light rounded bg-[#f8f9fa]"
               />
               <label className="font-light text-[16px]">AREA</label>
               <input
-                {...register("area")}
+                {...register("area", { required: true })}
                 placeholder="Near Secretery, Amaravathi"
                 className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] font-light"
               />
@@ -214,7 +371,7 @@ export default function CreateEventPage() {
               <label className="font-light text-[16px]">START TIME</label>
               <input
                 type="date"
-                {...register("startDate")}
+                {...register("startDate", { required: true })}
                 className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-gray-400 font-light"
                 onChange={(e) => {
                   e.target.classList.remove("text-gray-400", "font-light");
@@ -223,7 +380,7 @@ export default function CreateEventPage() {
               />
               <input
                 type="time"
-                {...register("startTime")}
+                {...register("startTime", { required: true })}
                 className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-gray-400 font-light"
                 onChange={(e) => {
                   e.target.classList.remove("text-gray-400", "font-light");
@@ -233,7 +390,7 @@ export default function CreateEventPage() {
               <label className="font-light text-[16px]">END TIME</label>
               <input
                 type="date"
-                {...register("endDate")}
+                {...register("endDate", { required: true })}
                 className="w-full border px-3 py-2 rounded bg-[#f8f9fa] font-light text-gray-400"
                 onChange={(e) => {
                   e.target.classList.remove("text-gray-400", "font-light");
@@ -242,7 +399,7 @@ export default function CreateEventPage() {
               />
               <input
                 type="time"
-                {...register("endTime")}
+                {...register("endTime", { required: true })}
                 className="w-full border px-3 py-2 rounded bg-[#f8f9fa] placeholder:font-light text-gray-400 font-light"
                 onChange={(e) => {
                   e.target.classList.remove("text-gray-400", "font-light");
