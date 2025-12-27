@@ -1,87 +1,128 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import mapImg from "@/assets/map.png";
+import { getEventById } from "@/firebase/collections";
 // Using a URL fallback since local assets might not render in this preview
+
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80";
+
 
 const EventDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   // Mock Database
-  const eventsData = {
-    1: {
-      id: 1,
-      title: "React Patterns Workshop",
-      club: "Coding Club",
-      type: "Workshop",
-      date: "October 10, 2026",
-      time: "10:00 AM - 4:00 PM",
-      location: "Main Auditorium, Block A",
-      image:
-        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=1200&q=80",
-      description:
-        "Join us for an intensive deep dive into advanced React patterns. We will cover Higher-Order Components, Render Props, Custom Hooks, and the latest React Server Components. This workshop is designed for developers who want to scale their applications efficiently.",
-      highlights: [
-        "Master Custom Hooks for reusable logic",
-        "Deep dive into React Server Components (RSC)",
-        "Performance optimization techniques",
-        "Live coding sessions with industry experts",
-        "Networking with 50+ developers",
-      ],
-      gFormLink: "https://docs.google.com/forms/d/e/1FAIpQLSfDxk...",
-      organizer: "Sarah Jenkins",
-      contact: "sarah.j@university.edu",
-      registeredMembers:100
-    },
-    2: {
-      id: 2,
-      title: "Badminton Open Championship",
-      club: "Sports Society",
-      type: "Sports",
-      date: "January 12, 2026",
-      time: "9:00 AM - 6:00 PM",
-      location: "University Sports Complex",
-      image:
-        "https://images.unsplash.com/photo-1626224583764-84786c713cd3?auto=format&fit=crop&w=1200&q=80",
-      description:
-        "The annual Inter-college Badminton Championship is here! Watch the best players from across the campus compete for the trophy. Open to all students and faculty.",
-      highlights: [
-        "Singles and Doubles categories",
-        "Professional referees",
-        "Cash prizes worth $500",
-        "Refreshments provided for all participants",
-        "Finals streamed live on campus TV",
-      ],
-      gFormLink: "https://docs.google.com/forms/u/0/",
-      organizer: "Coach Mike",
-      contact: "sports@university.edu",
-      registeredMembers:50
-    },
-    default: {
-      id: 0,
-      title: "Event Details Unavailable",
-      club: "Unknown Club",
-      type: "Event",
-      date: "TBD",
-      time: "TBD",
-      location: "TBD",
-      image:
-        "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80",
-      description: "We couldn't find the details for this specific event.",
-      highlights: [],
-      gFormLink: "#",
-      organizer: "N/A",
-      contact: "help@university.edu",
-      registeredMembers:0,
-    },
-  };
+  // const eventsData = {
+  //   1: {
+  //     id: 1,
+  //     title: "React Patterns Workshop",
+  //     club: "Coding Club",
+  //     type: "Workshop",
+  //     date: "October 10, 2026",
+  //     time: "10:00 AM - 4:00 PM",
+  //     location: "Main Auditorium, Block A",
+  //     image:
+  //       "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=1200&q=80",
+  //     description:
+  //       "Join us for an intensive deep dive into advanced React patterns. We will cover Higher-Order Components, Render Props, Custom Hooks, and the latest React Server Components. This workshop is designed for developers who want to scale their applications efficiently.",
+  //     highlights: [
+  //       "Master Custom Hooks for reusable logic",
+  //       "Deep dive into React Server Components (RSC)",
+  //       "Performance optimization techniques",
+  //       "Live coding sessions with industry experts",
+  //       "Networking with 50+ developers",
+  //     ],
+  //     gFormLink: "https://docs.google.com/forms/d/e/1FAIpQLSfDxk...",
+  //     organizer: "Sarah Jenkins",
+  //     contact: "sarah.j@university.edu",
+  //     registeredMembers:100
+  //   },
+  //   2: {
+  //     id: 2,
+  //     title: "Badminton Open Championship",
+  //     club: "Sports Society",
+  //     type: "Sports",
+  //     date: "January 12, 2026",
+  //     time: "9:00 AM - 6:00 PM",
+  //     location: "University Sports Complex",
+  //     image:
+  //       "https://images.unsplash.com/photo-1626224583764-84786c713cd3?auto=format&fit=crop&w=1200&q=80",
+  //     description:
+  //       "The annual Inter-college Badminton Championship is here! Watch the best players from across the campus compete for the trophy. Open to all students and faculty.",
+  //     highlights: [
+  //       "Singles and Doubles categories",
+  //       "Professional referees",
+  //       "Cash prizes worth $500",
+  //       "Refreshments provided for all participants",
+  //       "Finals streamed live on campus TV",
+  //     ],
+  //     gFormLink: "https://docs.google.com/forms/u/0/",
+  //     organizer: "Coach Mike",
+  //     contact: "sports@university.edu",
+  //     registeredMembers:50
+  //   },
+  //   default: {
+  //     id: 0,
+  //     title: "Event Details Unavailable",
+  //     club: "Unknown Club",
+  //     type: "Event",
+  //     date: "TBD",
+  //     time: "TBD",
+  //     location: "TBD",
+  //     image:
+  //       "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80",
+  //     description: "We couldn't find the details for this specific event.",
+  //     highlights: [],
+  //     gFormLink: "#",
+  //     organizer: "N/A",
+  //     contact: "help@university.edu",
+  //     registeredMembers:0,
+  //   },
+  // };
 
   // Fallback to default if ID not found
-  const event = eventsData[id] || eventsData.default;
+  //const event = eventsData[id] || eventsData.default;
+  
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(()=>{
+    const fetchEvent = async () => {
+      try {
+        const data = await getEventById(id);
+        setEvent(data);
+      } catch (err) {
+        console.error("Error fetching event:", err);
+        setEvent(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchEvent();
+  }, [id]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
+
+  if (loading) {
+    return <div className="p-10 text-center">Loading event...</div>;
+  }
+
+  if (!event) {
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-semibold">Event not found</h2>
+        <button
+          onClick={() => navigate(-1)}
+          className="mt-4 text-blue-500 underline"
+        >
+          Go back
+        </button>
+      </div>
+    );
+  }
+
 
   const handleRegister = () => {
     if (event.gFormLink && event.gFormLink !== "#") {
@@ -91,7 +132,8 @@ const EventDetailsPage = () => {
     }
   };
 
-  if (!event) return <div className="p-10 text-center">Loading...</div>;
+  const registeredMembers = event.registeredUsers?.length || 0;
+  const image = event.image || FALLBACK_IMAGE;
 
   return (
     <div className="min-h-screen bg-gray-50 px-8 py-4 md:px-12 md:py-4 animate-fade-in ">
@@ -126,7 +168,7 @@ const EventDetailsPage = () => {
             {/* Main Image */}
             <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 h-45 bg-gray-200 relative group">
               <img
-                src={event.image}
+                src={image}
                 alt={event.title}
                 className="w-full h-full object-cover"
               />
@@ -142,7 +184,7 @@ const EventDetailsPage = () => {
             <div>
               <div className="flex items-center gap-3">
                 <span className="text-gray-500 text-sm font-medium">
-                  by {event.organizer}
+                  by {event.head || "Club"}
                 </span>
               </div>
               <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 leading-tight">
@@ -337,7 +379,7 @@ const EventDetailsPage = () => {
                         Club
                       </p>
                       <p className="text-gray-900 font-semibold text-xs">
-                        {event.club}
+                        {event.clubname}
                       </p>
                     </div>
                   </div>
@@ -353,7 +395,7 @@ const EventDetailsPage = () => {
                        Registered Members
                       </p>
                       <p className="text-2xl font-extrabold text-gray-900">
-                         {event.registeredMembers}
+                         {event.registeredUsers?.length || 0}
                       </p>
                     </div>
 

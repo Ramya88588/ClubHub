@@ -23,7 +23,7 @@ dist-ssr/
 
 # Firebase service account key 
 firestore-seed/serviceAccountKey.json
-
+firestore-seed/
 # Editor / OS files
 .vscode/*
 !.vscode/extensions.json
