@@ -1,71 +1,89 @@
 
 import RecommendedSection from '@/components/layout/DashboardS/Recommended'
 import EventCard from '@/components/shared/eventCard'
-
 import React,{ useEffect, useState, useRef } from 'react'
-import { getStudentPastEvents } from '@/firebase/collections'
+import { getUpcomingRegisteredEvents,getStudentPastEvents } from '@/firebase/collections'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/firebase/firebase'
 
 
-
 const StudentDashboard = () => {
-
-  // const [events, setEvents] = useState([]);
-  // const [loading, setLoading] = useState(true);   
-
-  
-  const handleFeedback=()=>{
-     return <h1>FeedBack form</h1>
-  }
+  const [upcomingEvents , setUpcomingEvents] = useState([]);
+  const [pastEvents, setPastEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const scrollContainerRef = useRef(null);
- const events = [
-  {
-    id: 1,
-    type: "Workshop",
-    theme: "yellow",
-    title: "Intro to UI/UX",
-    description: "A deep dive into user interface principles.",
-    date: "12/10/2025",
-    isRegistered: false,
-  },
-  {
-    id: 2,
-    type: "Hackathon",
-    theme: "red",
-    title: "CodeRed 2025",
-    description: "24-hour coding marathon for developers.",
-    date: "15/10/2025",
-    isRegistered: true,
-  },
-  {
-    id: 3,
-    type: "Seminar",
-    theme: "blue",
-    title: "AI in 2029",
-    description: "Discussing the future of Generative AI.",
-    date: "20/11/2025",
-    isRegistered: false,
-  },
-  {
-    id: 4,
-    type: "Meetup",
-    theme: "green",
-    title: "Green Tech",
-    description: "Networking event for sustainable tech enthusiasts.",
-    date: "05/12/2025",
-    isRegistered: true,
-  },
-  {
-    id: 5,
-    type: "Workshop",
-    theme: "yellow",
-    title: "Advanced React",
-    description: "Scaling applications in enterprise environments.",
-    date: "10/01/2026",
-    isRegistered: false,
-  },
-];
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
+      const [upcoming, past] = await Promise.all([
+        getUpcomingRegisteredEvents(user.uid),
+        getStudentPastEvents(user.uid),
+      ]);
+
+      setUpcomingEvents(upcoming);
+      setPastEvents(past);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+  useEffect(() => {
+    console.log("CURRENT USER UID:", auth.currentUser?.uid);
+  }, []);
+
+//  const events = [
+//   {
+//     id: 1,
+//     type: "Workshop",
+//     theme: "yellow",
+//     title: "Intro to UI/UX",
+//     description: "A deep dive into user interface principles.",
+//     date: "12/10/2025",
+//     isRegistered: false,
+//   },
+//   {
+//     id: 2,
+//     type: "Hackathon",
+//     theme: "red",
+//     title: "CodeRed 2025",
+//     description: "24-hour coding marathon for developers.",
+//     date: "15/10/2025",
+//     isRegistered: true,
+//   },
+//   {
+//     id: 3,
+//     type: "Seminar",
+//     theme: "blue",
+//     title: "AI in 2029",
+//     description: "Discussing the future of Generative AI.",
+//     date: "20/11/2025",
+//     isRegistered: false,
+//   },
+//   {
+//     id: 4,
+//     type: "Meetup",
+//     theme: "green",
+//     title: "Green Tech",
+//     description: "Networking event for sustainable tech enthusiasts.",
+//     date: "05/12/2025",
+//     isRegistered: true,
+//   },
+//   {
+//     id: 5,
+//     type: "Workshop",
+//     theme: "yellow",
+//     title: "Advanced React",
+//     description: "Scaling applications in enterprise environments.",
+//     date: "10/01/2026",
+//     isRegistered: false,
+//   },
+// ];
 
   // useEffect(() => {
   //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -88,7 +106,8 @@ const StudentDashboard = () => {
   // }
 
  // Scroll 
-  const scroll = (direction) => {
+  
+ const scroll = (direction) => {
     if (scrollContainerRef.current) {
       const scrollAmount = 320; // Card width + gap
       scrollContainerRef.current.scrollBy({
@@ -97,6 +116,10 @@ const StudentDashboard = () => {
       });
     }
   };
+  if (loading) {
+    return <p className="p-10">Loading your events...</p>;
+  }
+
   return (
    <div className="mt-18 pt-10 flex flex-col gap-10 bg-[#f2f2f2] ">
     <div className="one pl-10">
@@ -105,11 +128,11 @@ const StudentDashboard = () => {
     </div>
     <div className="two flex justify-evenly py-8 bg-white">
        <div className="uP text-blue-500 flex flex-col items-center">
-        <p className="text-[36px]">2</p>
+        <p className="text-[36px]">{upcomingEvents.length}</p>
         <span className="font-light">Upcoming Events</span>
        </div>
        <div className="eA text-green-500 flex flex-col items-center">
-        <p className="text-[36px]">{events.length}</p>
+        <p className="text-[36px]">{pastEvents.length}</p>
         <span className="font-light"> Events Attended</span>
        </div>
        <div className="cH text-yellow-500 flex flex-col items-center">
@@ -126,8 +149,8 @@ const StudentDashboard = () => {
         </h2>
         </div>
         <div className="flex flex-wrap gap-6 ">
-           {events.map((event) => (
-         event.isRegistered && <EventCard 
+           {upcomingEvents.map((event) => (
+            <EventCard 
             key={event.id}
             variant="details" 
             {...event}
@@ -170,8 +193,8 @@ const StudentDashboard = () => {
         className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {events.map((event) => (
-         !event.isRegistered && <EventCard 
+        {pastEvents.map((event) => (
+         <EventCard 
             key={event.id}
            
             {...event}

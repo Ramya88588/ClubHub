@@ -2,6 +2,7 @@ import { collection, getDocs, query, where, doc, getDoc } from "firebase/firesto
 import {db} from "./firebase"
 
 
+
 /* Student event queries */
 
 // student - past events (registered + completed)
@@ -83,3 +84,22 @@ export const getEventById = async (eventId) => {
   }
 };
 
+// Get upcoming events registered by a user
+
+export const getUpcomingRegisteredEvents = async (userId) =>{
+    try{
+        const q = query(
+            collection(db, "events"),
+            where("registeredUsers", "array-contains", userId),
+            where("status", "==" , "upcoming")
+        );
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc =>({
+            id: doc.id,
+            ...doc.data(),
+        }));
+    }catch (error){
+        console.log("Error fetching registered events : ",error );
+        return [];
+    }
+};
