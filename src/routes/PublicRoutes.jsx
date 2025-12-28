@@ -6,6 +6,8 @@ import LandingPage from '../pages/public/LandingPage'
 import SignupPage from '../pages/public/SignupPage1'
 import SignupPage2 from '@/pages/public/SignupPage2'
 import NotFoundPage from '@/pages/public/NotFoundPage'
+import SignUpStudent from '@/components/layout/Signup/SignUpStudent'
+import SignUpClub from '@/components/layout/Signup/SignUpClub'
 const PublicRoutes = () => {
   return (
     <div>
@@ -15,6 +17,8 @@ const PublicRoutes = () => {
       <Route path="signup1" element={<SignupPage />} />
       <Route path="signup2" element={<SignupPage2 />} />
       <Route path="auth" element={<h1>Google Auth Page</h1>} />
+       <Route path="signup-student" element={<SignUpStudent/>} />
+       <Route path="signup-club" element={<SignUpClub />} />
       <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
     </div>
