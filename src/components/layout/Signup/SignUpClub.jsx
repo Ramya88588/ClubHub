@@ -1,29 +1,39 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-
-// mock backend (for now)
-const clubs = [];
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "@/firebase/firebase";
+import { createClubRequest } from "@/firebase/collections";
 
 const SignUpClub = () => {
+  const navigate = useNavigate();
+  const user = auth.currentUser;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    const payload = {
-      id: Date.now(),
-      clubName: data.clubName,
-      clubHeadName: data.clubHeadName,
-      role: "CLUB",
-      status: "PENDING_APPROVAL",
-      createdAt: new Date().toISOString(),
-    };
+  // Safety check
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
 
-    clubs.push(payload);
+  const onSubmit = async (data) => {
+    try {
+      await createClubRequest({
+        uid: user.uid,
+        clubName: data.clubName,
+        presidentName: data.clubHeadName,
+        email: user.email,
+      });
 
-    console.log("Club approval request sent:", clubs);
+      // Redirect to waiting approval page
+      navigate("/waiting-approval");
+    } catch (error) {
+      console.error("Club request failed:", error);
+      alert("Failed to submit approval request. Try again.");
+    }
   };
 
   return (

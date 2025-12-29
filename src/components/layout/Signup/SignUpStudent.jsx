@@ -1,18 +1,43 @@
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { auth } from "@/firebase/firebase";
+import { createStudentProfile } from "@/firebase/collections";
 
 const SignUpStudent = () => {
+  const navigate = useNavigate();
+  const user = auth.currentUser;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    // later → send to backend / firebase
-  };
+  // Safety check
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
 
+  const onSubmit = async (data) => {
+    try {
+      const phoneNumber = `${data.countryCode}${data.phone}`;
+
+      await createStudentProfile(user.uid, {
+        name: data.fullName,
+        phoneNumber,
+        email: user.email,
+      });
+
+      // Redirect to student dashboard
+      navigate("/student");
+    } catch (error) {
+      console.error("Student signup failed:", error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+  
   return (
     <div className="bg-[#f8f9fa] min-h-screen flex items-center px-4 justify-center">
       <div className="bg-white border rounded-xl max-w-md w-full mx-auto py-6 px-10 flex flex-col gap-6">

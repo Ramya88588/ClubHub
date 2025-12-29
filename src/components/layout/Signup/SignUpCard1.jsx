@@ -72,10 +72,40 @@
 // export default SignUpCard1;
 
 import { useNavigate } from "react-router-dom";
+import { auth } from "@/firebase/firebase";
+import { createUser } from "@/firebase/collections";
 
 const SignUpCard1 = () => {
   const navigate = useNavigate();
+  const user = auth.currentUser;
 
+  // Safety: user must be logged in
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
+
+  const handleStudent = async () => {
+    await createUser(user.uid, {
+      email: user.email,
+      role: "STUDENT",
+      isApproved: true,
+      isActive: true,
+    });
+
+    navigate("/signup-student");
+  };
+
+  const handleClub = async () => {
+    await createUser(user.uid, {
+      email: user.email,
+      role: "CLUB",
+      isApproved: false,
+      isActive: true,
+    });
+
+    navigate("/signup-club");
+  };
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
       <div className="max-w-4xl w-full bg-white shadow-sm rounded-md p-10 text-center">
