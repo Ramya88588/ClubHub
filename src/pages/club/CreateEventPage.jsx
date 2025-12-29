@@ -6,7 +6,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   addDoc,
@@ -14,7 +14,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
-import { getUserById } from "@/firebase/collections";
+import { getUserById, getClubById } from "@/firebase/collections";
 import { auth } from "@/firebase/firebase";
 
 const buildDateTime = (date, time) =>
@@ -52,18 +52,30 @@ export default function CreateEventPage() {
     "Sports",
   ];
 
+  // Update your useForm configuration
   const {
     register,
     handleSubmit,
     control,
     watch,
     setValue,
-    formState: { isValid },
+    formState: { errors, isValid },
   } = useForm({
-    mode: "onChange",
+    mode: "onChange", // This should trigger validation on change
     defaultValues: {
+      title: "",
+      attendees: "",
       categories: [],
+      description: "",
+      venue: "",
+      college: "",
+      area: "",
+      startDate: "",
+      startTime: "",
+      endDate: "",
+      endTime: "",
       highlights: [""],
+      feedbackFormLink: "",
     },
   });
 
@@ -72,7 +84,20 @@ export default function CreateEventPage() {
     name: "highlights",
   });
 
+  // Create watched variable BEFORE using it in useEffect
+  const watched = watch();
   const selectedCategories = watch("categories") || [];
+
+  // Debug useEffect - MOVED AFTER watched is declared
+  useEffect(() => {
+    console.log("Form validity:", isValid);
+    console.log("Current form values:", watched);
+  }, [isValid, watched]);
+
+  // Also check errors
+  useEffect(() => {
+    console.log("Form errors:", errors);
+  }, [errors]);
 
   /* ---------------- RESTORE LOCAL DRAFT ---------------- */
   useEffect(() => {
@@ -86,76 +111,129 @@ export default function CreateEventPage() {
   }, [setValue]);
 
   /* ---------------- AUTOSAVE LOCAL DRAFT ---------------- */
-  const watched = watch();
   useEffect(() => {
     localStorage.setItem("eventDraft", JSON.stringify(watched));
   }, [watched]);
 
   const onSubmit = async (formData) => {
-    const startDateTime = buildDateTime(formData.startDate, formData.startTime);
-    let endDateTime = buildDateTime(formData.endDate, formData.endTime);
+    console.log("🎯 SUBMIT CLICKED");
+    console.log("Form data:", formData);
+    console.log("Is valid?", isValid);
 
-    if (endDateTime <= startDateTime) {
-      endDateTime.setDate(endDateTime.getDate() + 1);
-    }
+    // Add validation check
+    const requiredFields = [
+      'title',
+      'attendees',
+      'description',
+      'venue',
+      'college',
+      'area',
+      'startDate',
+      'startTime',
+      'endDate',
+      'endTime',
+    ];
 
-    const user = auth.currentUser;
-    if (!user) {
-      alert("User not logged in");
+    const missingFields = requiredFields.filter((field) => !formData[field]);
+    if (missingFields.length > 0) {
+      console.log("Missing fields:", missingFields);
+      alert(`Missing required fields: ${missingFields.join(', ')}`);
       return;
     }
 
-    const clubUser = await getUserById(user.uid);
-    if (!clubUser || clubUser.role !== "club") {
-      alert("Only club accounts can create events");
+    if (!formData.categories || formData.categories.length === 0) {
+      alert("Please select at least one category");
       return;
     }
 
-    const eventTypeThemeMap = {
-      Workshop: "yellow",
-      Seminar: "blue",
-      Club: "green",
-      Music: "red",
-      Tech: "blue",
-      Art: "yellow",
-      Sports: "green",
-      Hackathon: "yellow"
-    };
+    try {
+      const startDateTime = buildDateTime(formData.startDate, formData.startTime);
+      let endDateTime = buildDateTime(formData.endDate, formData.endTime);
 
-    const payload = {
-      clubId: clubUser.uid,
-      clubName: clubUser.clubname,
-      head: clubUser.clubname,
-      title: formData.title,
-      description: formData.description,
-      highlights: formData.highlights.filter(Boolean),
-      image: "https://picsum.photos/seed/event/600/400",
-      location: {
-        venue: formData.venue,
-        college: formData.college,
-        area: formData.area,
-      },
-      attendees: formData.attendees,
-      date: formatDate(formData.startDate),
-      startDateTime,
-      endDateTime,
-      time: {
-        start: formatTime(formData.startDate, formData.startTime),
-        end: formatTime(formData.endDate, formData.endTime),
-      },
-      registeredUsers: [],
-      status: "upcoming",
-      categories: formData.categories,
-      type: formData.categories[0],
-      theme: eventTypeThemeMap[formData.categories[0]] || "green",
-      feedbackFormLink: formData.feedbackFormLink,
-      createdAt: serverTimestamp(),
-    };
+      if (endDateTime <= startDateTime) {
+        endDateTime.setDate(endDateTime.getDate() + 1);
+      }
 
-    await addDoc(collection(db, "events"), payload);
-    localStorage.removeItem("eventDraft");
-    alert("✅ Event published successfully");
-    navigate(-1);
+      const user = auth.currentUser;
+      if (!user) {
+        alert("User not logged in");
+        return;
+      }
+
+      // 🔐 check auth + approval
+      const userDoc = await getUserById(user.uid);
+      if (!userDoc || userDoc.role !== "CLUB" || userDoc.isApproved !== true) {
+        alert("Only approved club accounts can create events");
+        return;
+      }
+
+      // 🏫 fetch club profile
+      const club = await getClubById(user.uid);
+      if (!club) {
+        alert("Club profile not found. Contact admin.");
+        return;
+      }
+
+      const eventTypeThemeMap = {
+        Workshop: "yellow",
+        Seminar: "blue",
+        Club: "green",
+        Music: "red",
+        Tech: "blue",
+        Art: "yellow",
+        Sports: "green",
+        Hackathon: "yellow",
+      };
+
+      const payload = {
+        clubId: user.uid, // ✅ auth uid
+        clubName: club.clubName, // ✅ from clubs collection
+        head: club.presidentName, // ✅ correct field
+
+        title: formData.title,
+        description: formData.description,
+        highlights: formData.highlights.filter(Boolean),
+
+        image: "https://picsum.photos/seed/event/600/400",
+
+        location: {
+          venue: formData.venue,
+          college: formData.college,
+          area: formData.area,
+        },
+
+        attendees: Number(formData.attendees), // Ensure it's a number
+        date: formatDate(formData.startDate),
+
+        startDateTime,
+        endDateTime,
+
+        time: {
+          start: formatTime(formData.startDate, formData.startTime),
+          end: formatTime(formData.endDate, formData.endTime),
+        },
+
+        registeredUsers: [],
+        status: "upcoming",
+
+        categories: formData.categories,
+        type: formData.categories[0],
+        theme: eventTypeThemeMap[formData.categories[0]] || "green",
+
+        feedbackFormLink: formData.feedbackFormLink || "",
+        createdAt: serverTimestamp(),
+      };
+      console.log("WRITING EVENT...");
+      await addDoc(collection(db, "events"), payload);
+      console.log("WRITE SUCCESS");
+      localStorage.removeItem("eventDraft");
+      alert("✅ Event published successfully");
+      navigate(-1);
+    } catch (err) {
+      console.error("🔥 FIRESTORE ERROR:", err);
+      console.error("Create event failed:", err);
+      alert("Failed to publish event. Check console.");
+    }
   };
 
   const handleBack = () => {
@@ -192,9 +270,22 @@ export default function CreateEventPage() {
           >
             <Upload /> Publish
           </button>
+          {/* Debug button */}
+          <button
+            type="button"
+            onClick={() => {
+              console.log("Current form values:", watched);
+              console.log("Form errors:", errors);
+              console.log("Is valid?", isValid);
+              console.log("Selected categories:", selectedCategories);
+            }}
+            className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+          >
+            Debug
+          </button>
         </div>
       </div>
-      
+
       <form
         id="create-event-form"
         onSubmit={handleSubmit(onSubmit)}
@@ -211,26 +302,47 @@ export default function CreateEventPage() {
               <h3 className="font-semibold text-[24px]">Event Details</h3>
             </div>
 
-            <label className="font-light text-[16px]">EVENT TITLE</label>
+            <label className="font-light text-[16px]">
+              EVENT TITLE <span className="text-red-500">*</span>
+            </label>
             <input
-              {...register("title", { required: true })}
+              {...register("title", {
+                required: "Event title is required",
+                minLength: { value: 5, message: "Minimum 5 characters" },
+              })}
               placeholder="Eg, Annual Tech Fest 2025"
-              className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] placeholder:font-light"
+              className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] placeholder:font-light ${
+                errors.title ? "border-red-500" : ""
+              }`}
             />
-           
-            <label className="font-light text-[16px]">MAX ATTENDEES</label>
+            {errors.title && (
+              <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+            )}
+
+            <label className="font-light text-[16px]">
+              MAX ATTENDEES <span className="text-red-500">*</span>
+            </label>
             <input
               type="number"
               min={1}
               {...register("attendees", {
-                required: true,
+                required: "Required",
                 valueAsNumber: true,
+                min: { value: 1, message: "Minimum 1 attendee" },
+                max: { value: 10000, message: "Maximum 10000 attendees" },
               })}
               placeholder="Eg, 200"
-              className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] placeholder:font-light"
+              className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] placeholder:font-light ${
+                errors.attendees ? "border-red-500" : ""
+              }`}
             />
+            {errors.attendees && (
+              <p className="text-red-500 text-sm mt-1">{errors.attendees.message}</p>
+            )}
 
-            <label className="font-light text-[16px]">CATEGORIES</label>
+            <label className="font-light text-[16px]">
+              CATEGORIES <span className="text-red-500">*</span>
+            </label>
             <div className="relative">
               {/* Dropdown Trigger */}
               <div
@@ -259,7 +371,15 @@ export default function CreateEventPage() {
                       <input
                         type="checkbox"
                         value={cat}
-                        {...register("categories")}
+                        checked={selectedCategories.includes(cat)}
+                        onChange={(e) => {
+                          const newCategories = e.target.checked
+                            ? [...selectedCategories, cat]
+                            : selectedCategories.filter((c) => c !== cat);
+                          setValue("categories", newCategories, {
+                            shouldValidate: true,
+                          });
+                        }}
                         className="accent-green-500"
                       />
                       {cat}
@@ -268,7 +388,9 @@ export default function CreateEventPage() {
                 </div>
               )}
             </div>
-            
+            {errors.categories && (
+              <p className="text-red-500 text-sm mt-1">{errors.categories.message}</p>
+            )}
             {selectedCategories.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {selectedCategories.map((cat) => (
@@ -282,12 +404,22 @@ export default function CreateEventPage() {
               </div>
             )}
 
-            <label className="font-light text-[16px]">DESCRIPTION</label>
+            <label className="font-light text-[16px]">
+              DESCRIPTION <span className="text-red-500">*</span>
+            </label>
             <textarea
-              {...register("description", { required: true })}
+              {...register("description", {
+                required: "Description is required",
+                minLength: { value: 50, message: "Minimum 50 characters" },
+              })}
               placeholder="Describe the event agenda, prerequisites and goals..."
-              className="w-full border px-3 py-2 rounded min-h-[100px] bg-[#f8f9fa] text-[16px] placeholder:font-light"
+              className={`w-full border px-3 py-2 rounded min-h-[100px] bg-[#f8f9fa] text-[16px] placeholder:font-light ${
+                errors.description ? "border-red-500" : ""
+              }`}
             />
+            {errors.description && (
+              <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+            )}
 
             {/* Highlights */}
             <div>
@@ -320,7 +452,7 @@ export default function CreateEventPage() {
             </div>
           </div>
 
-          {/* Right - Keep all other sections exactly as they were */}
+          {/* Right */}
           <div className="space-y-4">
             {/* Location */}
             <div className="bg-white border rounded-lg p-5 space-y-3">
@@ -328,24 +460,47 @@ export default function CreateEventPage() {
                 <Building2 className="text-green-500"></Building2>
                 <h3 className="font-semibold">Location</h3>
               </div>
-              <label className="font-light text-[16px]">VENUE</label>
+              <label className="font-light text-[16px]">
+                VENUE <span className="text-red-500">*</span>
+              </label>
               <input
-                {...register("venue", { required: true })}
+                {...register("venue", { required: "Venue is required" })}
                 placeholder="Eg, Newton Hall"
-                className="w-full text-[16px] placeholder:font-ligjt border px-3 py-2 rounded bg-[#f8f9fa]"
+                className={`w-full text-[16px] placeholder:font-ligjt border px-3 py-2 rounded bg-[#f8f9fa] ${
+                  errors.venue ? "border-red-500" : ""
+                }`}
               />
-              <label className="font-light text-[16px]">COLLEGE</label>
+              {errors.venue && (
+                <p className="text-red-500 text-sm mt-1">{errors.venue.message}</p>
+              )}
+
+              <label className="font-light text-[16px]">
+                COLLEGE <span className="text-red-500">*</span>
+              </label>
               <input
-                {...register("college", { required: true })}
+                {...register("college", { required: "College is required" })}
                 placeholder="Eg, VIT-AP"
-                className="w-full border px-3 py-2 text-[16px] font-light rounded bg-[#f8f9fa]"
+                className={`w-full border px-3 py-2 text-[16px] font-light rounded bg-[#f8f9fa] ${
+                  errors.college ? "border-red-500" : ""
+                }`}
               />
-              <label className="font-light text-[16px]">AREA</label>
+              {errors.college && (
+                <p className="text-red-500 text-sm mt-1">{errors.college.message}</p>
+              )}
+
+              <label className="font-light text-[16px]">
+                AREA <span className="text-red-500">*</span>
+              </label>
               <input
-                {...register("area", { required: true })}
+                {...register("area", { required: "Area is required" })}
                 placeholder="Near Secretery, Amaravathi"
-                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] font-light"
+                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] font-light ${
+                  errors.area ? "border-red-500" : ""
+                }`}
               />
+              {errors.area && (
+                <p className="text-red-500 text-sm mt-1">{errors.area.message}</p>
+              )}
             </div>
 
             {/* Time */}
@@ -354,44 +509,90 @@ export default function CreateEventPage() {
                 <CalendarClock className="text-green-500"></CalendarClock>
                 <h3 className="font-semibold">Time</h3>
               </div>
-              <label className="font-light text-[16px]">START TIME</label>
+              
+              <label className="font-light text-[16px]">
+                START TIME <span className="text-red-500">*</span>
+              </label>
+              
+              {/* START DATE - FIXED */}
               <input
                 type="date"
-                {...register("startDate", { required: true })}
-                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-gray-400 font-light"
+                {...register("startDate", { required: "Start date is required" })}
+                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
+                  errors.startDate ? "border-red-500 text-gray-900" : "text-gray-900"
+                }`}
                 onChange={(e) => {
+                  // Update the value in form state
+                  setValue("startDate", e.target.value, { shouldValidate: true });
+                  // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
+              {errors.startDate && (
+                <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
+              )}
+
+              {/* START TIME - FIXED */}
               <input
                 type="time"
-                {...register("startTime", { required: true })}
-                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-gray-400 font-light"
+                {...register("startTime", { required: "Start time is required" })}
+                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
+                  errors.startTime ? "border-red-500 text-gray-900" : "text-gray-900"
+                }`}
                 onChange={(e) => {
+                  // Update the value in form state
+                  setValue("startTime", e.target.value, { shouldValidate: true });
+                  // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
-              <label className="font-light text-[16px]">END TIME</label>
+              {errors.startTime && (
+                <p className="text-red-500 text-sm mt-1">{errors.startTime.message}</p>
+              )}
+
+              <label className="font-light text-[16px]">
+                END TIME <span className="text-red-500">*</span>
+              </label>
+              
+              {/* END DATE - FIXED */}
               <input
                 type="date"
-                {...register("endDate", { required: true })}
-                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] font-light text-gray-400"
+                {...register("endDate", { required: "End date is required" })}
+                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
+                  errors.endDate ? "border-red-500 text-gray-900" : "text-gray-900"
+                }`}
                 onChange={(e) => {
+                  // Update the value in form state
+                  setValue("endDate", e.target.value, { shouldValidate: true });
+                  // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
+              {errors.endDate && (
+                <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>
+              )}
+
+              {/* END TIME - FIXED */}
               <input
                 type="time"
-                {...register("endTime", { required: true })}
-                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] placeholder:font-light text-gray-400 font-light"
+                {...register("endTime", { required: "End time is required" })}
+                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
+                  errors.endTime ? "border-red-500 text-gray-900" : "text-gray-900"
+                }`}
                 onChange={(e) => {
+                  // Update the value in form state
+                  setValue("endTime", e.target.value, { shouldValidate: true });
+                  // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
+              {errors.endTime && (
+                <p className="text-red-500 text-sm mt-1">{errors.endTime.message}</p>
+              )}
             </div>
 
             {/* Upload */}
