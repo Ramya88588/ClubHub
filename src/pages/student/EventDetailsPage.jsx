@@ -366,7 +366,7 @@ useEffect(() => {
                         Club
                       </p>
                       <p className="text-gray-900 font-semibold text-xs">
-                        {event.clubname}
+                        {event.clubName}
                       </p>
                     </div>
                   </div>
