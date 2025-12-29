@@ -26,7 +26,7 @@ const NotificationsSection = () => {
     <div className="mt-10 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <span class="material-symbols-outlined text-blue-500" style={{ fontSize: "32px" }}>edit_notifications</span>
+        <span className="material-symbols-outlined text-blue-500" style={{ fontSize: "32px" }}>edit_notifications</span>
         <h2 className="text-[26px]">Notifications</h2>
       </div>
 
