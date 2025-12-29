@@ -41,13 +41,49 @@ export const updateUser = async (uid, data) => {
  
 // - Creating Student Profile 
 
-export const createStudentProfile = async (uid, data) => {
+export const createStudent = async (uid, data) => {
   const ref = doc(db, "students", uid);
+
   await setDoc(ref, {
-    uid,
-    ...data,
+    profile: {
+      displayName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      photoURL: data.photoURL || null,
+    },
+
+    preferences: {
+      interests: [],
+      academicScheduleURL: null,
+    },
+
+    notifications: {
+      eventReminders: true,
+      hiringAlerts: false,
+      feedbackRequests: true,
+    },
+
+    isActive: true,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
+  });
+};
+
+// - get student by id
+
+export const getStudentById = async (uid) => {
+  const ref = doc(db, "students", uid);
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+};
+
+// - get update student
+
+export const updateStudent = async (uid, updates) => {
+  const ref = doc(db, "students", uid);
+  await updateDoc(ref, {
+    ...updates,
+    updatedAt: new Date(),
   });
 };
 

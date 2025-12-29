@@ -1,5 +1,7 @@
 import React from 'react'
 import {Routes,Route} from "react-router-dom"
+import SignUpCard1 from "@/components/layout/Signup/SignUpCard1";
+
 
 import LoginPage from '../pages/public/LoginPage'
 import LandingPage from '../pages/public/LandingPage'
@@ -13,6 +15,7 @@ const PublicRoutes = () => {
   return (
     <div>
       <Routes>
+      <Route path="/signup" element={<SignUpCard1 />} />
       <Route path="login" element={<LoginPage />} />
       <Route index element={<LandingPage/>} />
       <Route path="signup1" element={<SignupPage />} />

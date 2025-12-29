@@ -1,77 +1,71 @@
-import { useState, useRef } from "react";
-const users = [
-  {
-    id: 1,
-    name: "Alex Johnson",
-    email: "alexjohnson@college.edu",
-    role: "STUDENT",
-    avatar: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex",
-    interests: ["abcdef", "Web Development", "AI & ML", "Hackathons"],
-    timetableImage: null,
-    phoneNumber: "9999999999",
-  },
-];
+import { useState, useRef, useEffect } from "react";
 
-const ProfileInfoSection = () => {
+const ProfileInfoSection = ({ student, onUpdate }) => {
   const fileInputRef = useRef(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    avatar: "",
+  });
+
+  // 🔹 Sync Firestore → UI
+  useEffect(() => {
+    if (!student) return;
+
+    setFormData({
+      fullName: student.fullName || "",
+      email: student.profile.email || "",
+      phone: student.phone || "",
+      avatar:
+        student.avatar ||
+        "https://api.dicebear.com/7.x/fun-emoji/svg?seed=User",
+    });
+  }, [student]);
+
+  // 🔹 Image picker
   const handleImageClick = () => {
     fileInputRef.current.click();
   };
+
+  // 🔹 Local image preview (upload later)
   const handleProfileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     const imageURL = URL.createObjectURL(file);
-    setFormData((prev) => ({
-      ...prev,
-      avatar: imageURL,
-    }));
+    setFormData((prev) => ({ ...prev, avatar: imageURL }));
   };
-  // backend → UI
-  const [user, setUser] = useState(users[0]);
 
-  // edit mode
-  const [isEditing, setIsEditing] = useState(false);
-
-  // temporary form state
-  const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
-    phone: user.phone,
-    avatar: user.avatar,
-  });
-
-  // handle input change
+  // 🔹 Input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // save changes
+  // 🔹 Save → parent → Firestore
   const handleSave = () => {
-    // 1️⃣ update UI
-    setUser(formData);
+    onUpdate({
+      fullName: formData.fullName,
+      phone: formData.phone,
+      avatar: formData.avatar,
+      
+    });
 
-    // 2️⃣ update backend
-    users[0] = {
-      ...users[0],
-      ...formData,
-    };
-
-    // 3️⃣ exit edit mode
     setIsEditing(false);
-
-    console.log("Backend updated:", users);
   };
 
+  if (!student) {
+    return <div>Loading profile...</div>;
+  }
   return (
     <div className=" space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
         <span
-          class="material-symbols-outlined text-blue-500"
+          className="material-symbols-outlined text-blue-500"
           style={{ fontSize: "32px" }}
         >
           person_edit
@@ -104,7 +98,7 @@ const ProfileInfoSection = () => {
         <div className="flex gap-5 md:flex-row md:items-center flex-col">
           <div className="relative p-2">
             <img
-              src={formData.avatar}
+              src={formData.avatar || "https://api.dicebear.com/7.x/fun-emoji/svg?seed=User"}
               alt="avatar"
               className="w-44 h-44 rounded-full bg-blue-100 relative"
             />
@@ -135,15 +129,15 @@ const ProfileInfoSection = () => {
                 <div className=" border rounded px-3 py-2 mt-1 bg-[#f8f9fa]">
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
+                    name="fullName"
+                    value={formData.fullName}
                     onChange={handleChange}
                     className="outline-none w-full"
                   />
                 </div>
               ) : (
                 <p className="border rounded px-3 py-2 mt-1 bg-[#f8f9fa]">
-                  {user.name}
+                  {student.fullName}
                 </p>
               )}
             </div>
@@ -163,7 +157,7 @@ const ProfileInfoSection = () => {
                   </div>
                 ) : (
                   <p className="border rounded px-3 py-2 mt-1 bg-[#f8f9fa]">
-                    {user.email}
+                    {student.profile.email}
                   </p>
                 )}
               </div>
@@ -183,7 +177,7 @@ const ProfileInfoSection = () => {
                   </div>
                 ) : (
                   <p className="border rounded px-3 py-2 mt-1 bg-[#f8f9fa]">
-                    {user.phone || "Not provided"}
+                    {student.phone || "Not provided"}
                   </p>
                 )}
               </div>
