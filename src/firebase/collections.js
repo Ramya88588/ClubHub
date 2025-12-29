@@ -46,7 +46,7 @@ export const createStudent = async (uid, data) => {
 
   await setDoc(ref, {
     profile: {
-      displayName: data.fullName,
+      fullName: data.fullName,
       email: data.email,
       phone: data.phone,
       photoURL: data.photoURL || null,
