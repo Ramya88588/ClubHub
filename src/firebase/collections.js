@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp} from "firebase/firestore";
 import {db} from "./firebase"
 
 //get user by their id
@@ -12,6 +12,102 @@ export const getUserById = async (uid) => {
 
   return null;
 };
+
+// USERS 
+
+// - Create Users
+
+export const createUser = async (uid, data) => {
+  const ref = doc(db, "users", uid);
+  await setDoc(ref, {
+    uid,
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// - Update Users
+
+export const updateUser = async (uid, data) => {
+  const ref = doc(db, "users", uid);
+  await updateDoc(ref, {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// STUDENTS
+ 
+// - Creating Student Profile 
+
+export const createStudentProfile = async (uid, data) => {
+  const ref = doc(db, "students", uid);
+  await setDoc(ref, {
+    uid,
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// CLUB REQUESTS
+
+// - Request for Creating Club 
+
+export const createClubRequest = async (data) => {
+  const ref = collection(db, "clubRequests");
+  await addDoc(ref, {
+    ...data,
+    status: "PENDING",
+    createdAt: serverTimestamp(),
+  });
+};
+
+// - Get club by their id
+export const getClubById = async (clubId) => {
+  const ref = doc(db, "clubs", clubId);
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+};
+
+
+// - Admin's fetch pending requests
+
+export const getPendingClubRequests = async () => {
+  const q = query(
+    collection(db, "clubRequests"),
+    where("status", "==", "PENDING")
+  );
+
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
+
+// - Admin: update request status
+
+export const updateClubRequest = async (requestId, data) => {
+  const ref = doc(db, "clubRequests", requestId);
+  await updateDoc(ref, data);
+};
+
+// CLUBS
+
+// - Creating Clubs only after Approval
+
+export const createClub = async (clubId, data) => {
+  const ref = doc(db, "clubs", clubId);
+  await setDoc(ref, {
+    clubId,
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
 
 /* Student event queries */
 
