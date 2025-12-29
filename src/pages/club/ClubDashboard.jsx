@@ -10,7 +10,8 @@ import { useEffect, useState } from "react";
 import {
   getClubUpcomingEvents,
   getClubPastEvents,
-  getUserById
+  getUserById,
+  getClubById
 } from "@/firebase/collections";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
@@ -105,14 +106,17 @@ const ClubDashboard = () => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) return;
 
-      const data = await getUserById(user.uid);
+    const userDoc = await getUserById(user.uid);
 
-      if (data?.role !== "club") {
-        console.error("Not a club account");
-        return;
-      }
+    if (userDoc?.role !== "CLUB") {
+      console.error("Not a club account");
+      return;
+    }
 
-      setClub(data);
+    // fetch club profile
+    const clubData = await getClubById(user.uid);
+    setClub(clubData);
+
 
       // ✅ USE AUTH UID AS CLUB ID
       const [upcoming, past] = await Promise.all([
@@ -139,7 +143,7 @@ const ClubDashboard = () => {
         <div className="">
           <p className="font-semibold text-[32px]">
             <span className="text-green-500 font-semibold text-[32px]">
-              {club?.clubname || "Club"}
+              {club?.clubName || "Club"}
             </span>
              Dashboard
           </p>
@@ -153,8 +157,8 @@ const ClubDashboard = () => {
                 <p className="text-gray-400">Loading club info...</p>
               ) : (
                 <>
-                  <p>Name: {club.clubname}</p>
-                  <p>President: {club.presidentname}</p>
+                  <p>Name: {club.clubName}</p>
+                  <p>President: {club.presidentName}</p>
                   <p>Members: {club.membersCount ?? 0}</p>
                 </>
               )}

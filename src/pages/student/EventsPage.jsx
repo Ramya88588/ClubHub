@@ -71,7 +71,7 @@ const normalizeDate = (date) => {
     const matchesType = typeFilter === '' || event.type === typeFilter;
 
     // Club Logic
-    const matchesClub = clubFilter === '' || event.clubname === clubFilter;
+    const matchesClub = clubFilter === '' || event.clubName === clubFilter;
 
     // Date Logic
     // Date Logic (FIXED)
