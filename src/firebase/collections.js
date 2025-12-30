@@ -91,12 +91,15 @@ export const updateStudent = async (uid, updates) => {
 
 // - Request for Creating Club 
 
-export const createClubRequest = async (data) => {
+export const createClubRequest = async (uid, data) => {
   const ref = collection(db, "clubRequests");
+
   await addDoc(ref, {
+    uid,                    // 🔑 VERY IMPORTANT
     ...data,
     status: "PENDING",
     createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   });
 };
 
@@ -113,15 +116,18 @@ export const getClubById = async (clubId) => {
 export const getPendingClubRequests = async () => {
   const q = query(
     collection(db, "clubRequests"),
-    where("status", "==", "PENDING")
+    where("status", "==", "PENDING"),
+    orderBy("createdAt", "desc")
   );
 
   const snapshot = await getDocs(q);
+
   return snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
   }));
 };
+
 
 // - Admin: update request status
 
@@ -130,18 +136,71 @@ export const updateClubRequest = async (requestId, data) => {
   await updateDoc(ref, data);
 };
 
+//- admin: approve
+
+export const approveClubRequest = async (requestId) => {
+  const ref = doc(db, "clubRequests", requestId);
+
+  await updateDoc(ref, {
+    status: "APPROVED",
+    reviewedAt: serverTimestamp(),
+  });
+};
+// - admin reject
+
+export const rejectClubRequest = async (requestId, reason = "") => {
+  const ref = doc(db, "clubRequests", requestId);
+
+  await updateDoc(ref, {
+    status: "REJECTED",
+    reason,
+    reviewedAt: serverTimestamp(),
+  });
+};
+
+
 // CLUBS
 
 // - Creating Clubs only after Approval
-
 export const createClub = async (clubId, data) => {
+  if (!clubId) {
+    throw new Error("Club ID is required");
+  }
+
   const ref = doc(db, "clubs", clubId);
-  await setDoc(ref, {
+
+  const payload = {
     clubId,
-    ...data,
+
+    // 🔹 Basic club info
+    clubName: data.clubName || "",
+    description: data.description || "",
+    category: data.category || [],
+
+    // 🔹 Leadership & contact
+    presidentName: data.presidentName || "",
+    email: data.email || "",
+    phone: data.phone || "",
+
+    // 🔹 Media
+    logo: data.logo || null,
+
+    // 🔹 Social links
+    socials: {
+      linkedin: data.linkedin || "",
+      instagram: data.instagram || "",
+      website: data.website || "",
+
+    },
+
+    // 🔹 System
+    isActive: true,                 // ✅ approved clubs only
+    approvedAt: serverTimestamp(),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  });
+  };
+
+  await setDoc(ref, payload);
 };
 
 
