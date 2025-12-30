@@ -2,22 +2,7 @@ import { useState , useEffect} from "react";
 import AcademicScheduleSection from "./AcademicScheduleSection";
 
 const ALL_INTERESTS = [
-  "Web Development",
-  "AI & ML",
-  "Hackathons",
-  "Competitive Coding",
-  "Design",
-  "Robotics",
-  "Art",
-  "Entertainment",
-  "CP",
-  "Music",
-  "BlockChain",
-  "GenAI",
-  "UI/UX",
-  "Java",
-  "Python",
-  "C++",
+  "Workshop", "Seminar", "Club", "Music", "Tech", "Art", "Sports", "Coding"
 ];
 // const users = [
 //   {

@@ -187,6 +187,23 @@ export const getStudentUpcomingEvents = async (studentUid)=>{
     }
 }
 
+export const getRecommendedEvents = async (interests = []) => {
+  if (!interests.length) return [];
+
+  const q = query(
+    collection(db, "events"),
+    where("status", "==", "upcoming"),
+    
+  );
+
+  const snap = await getDocs(q);
+
+  return snap.docs
+    .map((doc) => ({ id: doc.id, ...doc.data() }))
+    .filter((event) =>
+       interests.includes(event.type));
+    
+};
 
 /* Upcoming events - not registered + registered (events page) */
 
