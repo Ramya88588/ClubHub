@@ -1,54 +1,76 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import EventCard from '@/components/shared/eventCard';
+import { auth } from '@/firebase/firebase';
+import { getStudentById, getRecommendedEvents } from '@/firebase/collections';
+
 const RecommendedSection = () => {
-  // 1. DEFINE REF
+  
   const scrollContainerRef = useRef(null);
-
-  // Mock Data
-  const recommendations = [
-    {
-      id: 1,
-      type: "Concert",
-      theme: "yellow", // Matches image Yellow badge
-      title: "Summer Vibes",
-      description: "Live music festival featuring top indie bands.",
-      date: "25/12/2025"
-    },
-    {
-      id: 2,
-      type: "Art",
-      theme: "red", // Matches image Red badge
-      title: "Modern Art Expo",
-      description: "Exhibition of contemporary digital art pieces.",
-      date: "28/12/2025"
-    },
-    {
-      id: 3,
-      type: "Tech",
-      theme: "blue", // Matches image Blue badge
-      title: "Robotics 101",
-      description: "Hands-on workshop building basic robots.",
-      date: "05/01/2026"
-    },
-    {
-      id: 4,
-      type: "Sports",
-      theme: "green", // Matches image Green badge
-      title: "Inter-College Cricket",
-      description: "Final match of the season.",
-      date: "12/01/2026"
-    },
-    {
-      id: 5,
-      type: "Music",
-      theme: "yellow",
-      title: "Jazz Night",
-      description: "Smooth jazz evening at the auditorium.",
-      date: "14/01/2026"
+  const [events, setEvents] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [interest,setInterest] = useState([]);
+  
+  useEffect(()=>{
+    const fetchRecommendations = async () =>{
+      const user = auth.currentUser;
+      if (!user) return;
+      const student = await getStudentById(user.uid);
+      console.log("STUDENT DOC:", student)
+      const interest = student.preferences?.interest || [];
+      setInterest(interest);
+      console.log("INTERESTS:", interest);
+      const recommended = await getRecommendedEvents(interest);
+      console.log("RECOMMENDED EVENTS:", recommended);
+      setEvents(recommended);
+      setLoading(false);
     }
-  ];
+    fetchRecommendations();
 
-  // 2. SCROLL LOGIC
+  },[]);
+
+  if(loading) return null;
+
+  if (interest.length === 0) {
+    return (
+      <section className="max-w-7xl mx-auto px-6 py-10">
+        <div className="bg-white border rounded-md p-6 text-center">
+          <h2 className="text-xl font-semibold">
+            Select your interests
+          </h2>
+          <p className="text-gray-500 mt-2">
+            Choose interests in settings to get personalized event recommendations.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (events.length === 0) {
+    return (
+      <section className="max-w-7xl mx-auto px-6 py-10">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="text-[24px] font-bold text-gray-900 tracking-wide uppercase">
+              Recommended For You
+            </h2>
+            {/* <p className="text-gray-500 font-light  mt-1">
+              Events that match your interests and free time.
+            </p> */}
+          </div>
+        </div>       
+        <div className="bg-white border rounded-md p-6 text-center">
+        
+          <h2 className="text-xl font-semibold">
+            No events based on your interests
+          </h2>
+          <p className="text-gray-500 mt-2">
+            Try updating your interests or check back later.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
       const scrollAmount = 320;
@@ -59,6 +81,8 @@ const RecommendedSection = () => {
     }
   };
 
+  if (loading || !events.length) return null;
+  if (loading) return <p className="p-6">Loading recommendations...</p>;
   return (
     <section className="max-w-7xl mx-auto px-6 py-10 "> {/* Added subtle bg to distinguish sections */}
       
@@ -96,7 +120,7 @@ const RecommendedSection = () => {
         className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-        {recommendations.map((event) => (
+        {events.map((event) => (
           <EventCard 
             key={event.id}
             {...event}

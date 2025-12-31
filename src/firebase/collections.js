@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp} from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp, orderBy} from "firebase/firestore";
 import {db} from "./firebase"
 
 //get user by their id
@@ -46,7 +46,7 @@ export const createStudent = async (uid, data) => {
 
   await setDoc(ref, {
     profile: {
-      displayName: data.fullName,
+      fullName: data.fullName,
       email: data.email,
       phone: data.phone,
       photoURL: data.photoURL || null,
@@ -91,12 +91,15 @@ export const updateStudent = async (uid, updates) => {
 
 // - Request for Creating Club 
 
-export const createClubRequest = async (data) => {
-  const ref = collection(db, "clubRequests");
-  await addDoc(ref, {
-    ...data,
+export const createClubRequest = async (uid, data) => {
+  const ref = doc(db, "clubRequests", uid);
+
+  await setDoc(ref, {
+    uid,                 // club owner's auth uid
+    ...data,             // clubName, presidentName, email, etc
     status: "PENDING",
     createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   });
 };
 
@@ -113,15 +116,18 @@ export const getClubById = async (clubId) => {
 export const getPendingClubRequests = async () => {
   const q = query(
     collection(db, "clubRequests"),
-    where("status", "==", "PENDING")
+    where("status", "==", "PENDING"),
+    orderBy("createdAt", "desc")
   );
 
   const snapshot = await getDocs(q);
+
   return snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
   }));
 };
+
 
 // - Admin: update request status
 
@@ -130,18 +136,71 @@ export const updateClubRequest = async (requestId, data) => {
   await updateDoc(ref, data);
 };
 
+//- admin: approve
+
+export const approveClubRequest = async (requestId) => {
+  const ref = doc(db, "clubRequests", requestId);
+
+  await updateDoc(ref, {
+    status: "APPROVED",
+    reviewedAt: serverTimestamp(),
+  });
+};
+// - admin reject
+
+export const rejectClubRequest = async (requestId, reason = "") => {
+  const ref = doc(db, "clubRequests", requestId);
+
+  await updateDoc(ref, {
+    status: "REJECTED",
+    reason,
+    reviewedAt: serverTimestamp(),
+  });
+};
+
+
 // CLUBS
 
 // - Creating Clubs only after Approval
-
 export const createClub = async (clubId, data) => {
+  if (!clubId) {
+    throw new Error("Club ID is required");
+  }
+
   const ref = doc(db, "clubs", clubId);
-  await setDoc(ref, {
+
+  const payload = {
     clubId,
-    ...data,
+
+    // 🔹 Basic club info
+    clubName: data.clubName || "",
+    description: data.description || "",
+    category: data.category || [],
+
+    // 🔹 Leadership & contact
+    presidentName: data.presidentName || "",
+    email: data.email || "",
+    phone: data.phone || "",
+
+    // 🔹 Media
+    logo: data.logo || null,
+
+    // 🔹 Social links
+    socials: {
+      linkedin: data.linkedin || "",
+      instagram: data.instagram || "",
+      website: data.website || "",
+
+    },
+
+    // 🔹 System
+    isActive: true,                 // ✅ approved clubs only
+    approvedAt: serverTimestamp(),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  });
+  };
+
+  await setDoc(ref, payload);
 };
 
 
@@ -187,6 +246,23 @@ export const getStudentUpcomingEvents = async (studentUid)=>{
     }
 }
 
+export const getRecommendedEvents = async (interests = []) => {
+  if (!interests.length) return [];
+
+  const q = query(
+    collection(db, "events"),
+    where("status", "==", "upcoming"),
+    
+  );
+
+  const snap = await getDocs(q);
+
+  return snap.docs
+    .map((doc) => ({ id: doc.id, ...doc.data() }))
+    .filter((event) =>
+       interests.includes(event.type));
+    
+};
 
 /* Upcoming events - not registered + registered (events page) */
 

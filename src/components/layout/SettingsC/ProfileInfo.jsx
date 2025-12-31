@@ -92,7 +92,7 @@ const ProfileInfo = () => {
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <span
-          class="material-symbols-outlined text-green-500"
+          className="material-symbols-outlined text-green-500"
           style={{ fontSize: "34px" }}
         >
           person_edit

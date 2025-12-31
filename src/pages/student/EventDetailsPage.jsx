@@ -108,7 +108,7 @@ useEffect(() => {
 
   const handleRegister = () => {
     if (event.gFormLink && event.gFormLink !== "#") {
-      window.open(event.gFormLink, "_blank");
+        navigate(`/events/${event.id}/register`);
     } else {
       alert("Registration link not available yet.");
     }

@@ -16,6 +16,7 @@ import {
 import { db } from "@/firebase/firebase";
 import { getUserById, getClubById } from "@/firebase/collections";
 import { auth } from "@/firebase/firebase";
+import { uploadImage } from "@/firebase/storage";
 
 const buildDateTime = (date, time) =>
   date && time ? new Date(`${date}T${time}`) : null;
@@ -184,6 +185,15 @@ export default function CreateEventPage() {
         Sports: "green",
         Hackathon: "yellow",
       };
+      // 🖼 Upload cover image (if provided)
+      let imageURL = "https://picsum.photos/seed/event/600/400"; // fallback
+
+      if (formData.coverImage && formData.coverImage[0]) {
+        imageURL = await uploadImage(
+          formData.coverImage[0],
+          `events/${Date.now()}_${formData.coverImage[0].name}`
+        );
+      }
 
       const payload = {
         clubId: user.uid, // ✅ auth uid
@@ -194,7 +204,7 @@ export default function CreateEventPage() {
         description: formData.description,
         highlights: formData.highlights.filter(Boolean),
 
-        image: "https://picsum.photos/seed/event/600/400",
+        image: imageURL,
 
         location: {
           venue: formData.venue,

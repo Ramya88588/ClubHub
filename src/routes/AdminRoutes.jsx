@@ -1,18 +1,44 @@
-import React from 'react'
-import {Route,Routes} from "react-router-dom"
-import ClubManagementPage from "../pages/admin/ClubManagementPage";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import NotFoundPage from '@/pages/public/NotFoundPage';
-
+import { Routes, Route, Navigate } from "react-router-dom";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import { auth } from "@/firebase/firebase";
+import { useEffect, useState } from "react";
+import { getUserById } from "@/firebase/collections";
 
 const AdminRoutes = () => {
+  const [allowed, setAllowed] = useState(null);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        setAllowed(false);
+        return;
+      }
+
+      const userDoc = await getUserById(user.uid);
+
+      // 🔐 ONLY ADMINS
+      setAllowed(userDoc?.role === "ADMIN");
+    };
+
+    checkAdmin();
+  }, []);
+
+  if (allowed === null) {
+    return <p className="p-10">Checking permissions...</p>;
+  }
+
+  if (!allowed) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <Routes>
-        <Route path="/" element={<AdminDashboard />} />
-        <Route path="/ManageClubs" element={<ClubManagementPage />} />
-         <Route path="*" element={<NotFoundPage/>}/>
+      <Route index element={<AdminDashboard />} />
+      {/* future admin routes */}
+      {/* <Route path="users" element={<AdminUsers />} /> */}
     </Routes>
-  )
-}
+  );
+};
 
-export default AdminRoutes
+export default AdminRoutes;

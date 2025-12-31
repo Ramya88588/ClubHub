@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-
+import { auth } from "@/firebase/firebase";
+import { uploadImage } from "@/firebase/storage";
 const ProfileInfoSection = ({ student, onUpdate }) => {
   const fileInputRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -31,12 +32,24 @@ const ProfileInfoSection = ({ student, onUpdate }) => {
   };
 
   // 🔹 Local image preview (upload later)
-  const handleProfileChange = (e) => {
+  const handleProfileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const imageURL = URL.createObjectURL(file);
-    setFormData((prev) => ({ ...prev, avatar: imageURL }));
+    const user = auth.currentUser;
+    if(!user) return;
+
+    const imageUrl = await uploadImage(
+      file, `avatars/students/${user.uid}.jpg`
+    );
+
+    setFormData((prev) =>({
+      ...prev,
+      avatar: imageUrl,
+    }));
+
+    await onUpdate({avatar: imageUrl});
+
   };
 
   // 🔹 Input change
