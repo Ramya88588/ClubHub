@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp} from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp, orderBy} from "firebase/firestore";
 import {db} from "./firebase"
 
 //get user by their id
@@ -92,11 +92,11 @@ export const updateStudent = async (uid, updates) => {
 // - Request for Creating Club 
 
 export const createClubRequest = async (uid, data) => {
-  const ref = collection(db, "clubRequests");
+  const ref = doc(db, "clubRequests", uid);
 
-  await addDoc(ref, {
-    uid,                    // 🔑 VERY IMPORTANT
-    ...data,
+  await setDoc(ref, {
+    uid,                 // club owner's auth uid
+    ...data,             // clubName, presidentName, email, etc
     status: "PENDING",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
