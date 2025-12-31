@@ -71,11 +71,76 @@
 
 // export default SignUpCard1;
 
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/firebase/firebase";
+import { createUser } from "@/firebase/collections";
 
 const SignUpCard1 = () => {
   const navigate = useNavigate();
 
+  const [firebaseUser, setFirebaseUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // 🔐 Wait for Firebase Auth to be READY
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setFirebaseUser(user);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // ⏳ Prevent render while loading
+  if (loading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  // 🚨 Safety fallback (should not happen)
+  if (!firebaseUser) {
+    navigate("/login");
+    return null;
+  }
+
+  /* ---------------- STUDENT ---------------- */
+  const handleStudent = async () => {
+    try {
+      await createUser(firebaseUser.uid, {
+        email: firebaseUser.email,
+        role: "STUDENT",
+        isApproved: true,
+        isActive: true,
+      });
+
+      navigate("/signup-student");
+    } catch (err) {
+      console.error("Student signup failed:", err);
+      alert("Something went wrong. Try again.");
+    }
+  };
+
+  /* ---------------- CLUB ---------------- */
+  const handleClub = async () => {
+    try {
+      await createUser(firebaseUser.uid, {
+        email: firebaseUser.email,
+        role: "CLUB",
+        isApproved: false,
+        isActive: true,
+      });
+
+      navigate("/signup-club");
+    } catch (err) {
+      console.error("Club signup failed:", err);
+      alert("Something went wrong. Try again.");
+    }
+  };
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
       <div className="max-w-4xl w-full bg-white shadow-sm rounded-md p-10 text-center">
@@ -91,7 +156,7 @@ const SignUpCard1 = () => {
 
           {/* Student */}
           <div
-            onClick={() => navigate("/signup-student")}
+            onClick={handleStudent}
             className="border rounded-sm p-6 flex flex-col gap-4 hover:shadow-md transition cursor-pointer"
           >
             <span className="material-symbols-outlined text-blue-500 p-4 bg-blue-200 rounded-full w-fit text-[32px]">
@@ -114,7 +179,7 @@ const SignUpCard1 = () => {
 
           {/* Club Leader */}
           <div
-            onClick={() => navigate("/signup-club")}
+            onClick={handleClub}
             className="border rounded-sm p-6 flex flex-col gap-4 hover:shadow-md transition cursor-pointer"
           >
             <span className="material-symbols-outlined text-green-500 p-4 bg-green-200 rounded-full w-fit text-[32px]">

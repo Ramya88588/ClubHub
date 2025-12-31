@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp, orderBy} from "firebase/firestore";
 import {db} from "./firebase"
 
 //get user by their id
@@ -12,6 +12,197 @@ export const getUserById = async (uid) => {
 
   return null;
 };
+
+// USERS 
+
+// - Create Users
+
+export const createUser = async (uid, data) => {
+  const ref = doc(db, "users", uid);
+  await setDoc(ref, {
+    uid,
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// - Update Users
+
+export const updateUser = async (uid, data) => {
+  const ref = doc(db, "users", uid);
+  await updateDoc(ref, {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// STUDENTS
+ 
+// - Creating Student Profile 
+
+export const createStudent = async (uid, data) => {
+  const ref = doc(db, "students", uid);
+
+  await setDoc(ref, {
+    profile: {
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      photoURL: data.photoURL || null,
+    },
+
+    preferences: {
+      interests: [],
+      academicScheduleURL: null,
+    },
+
+    notifications: {
+      eventReminders: true,
+      hiringAlerts: false,
+      feedbackRequests: true,
+    },
+
+    isActive: true,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// - get student by id
+
+export const getStudentById = async (uid) => {
+  const ref = doc(db, "students", uid);
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+};
+
+// - get update student
+
+export const updateStudent = async (uid, updates) => {
+  const ref = doc(db, "students", uid);
+  await updateDoc(ref, {
+    ...updates,
+    updatedAt: new Date(),
+  });
+};
+
+// CLUB REQUESTS
+
+// - Request for Creating Club 
+
+export const createClubRequest = async (uid, data) => {
+  const ref = doc(db, "clubRequests", uid);
+
+  await setDoc(ref, {
+    uid,                 // club owner's auth uid
+    ...data,             // clubName, presidentName, email, etc
+    status: "PENDING",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// - Get club by their id
+export const getClubById = async (clubId) => {
+  const ref = doc(db, "clubs", clubId);
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+};
+
+
+// - Admin's fetch pending requests
+
+export const getPendingClubRequests = async () => {
+  const q = query(
+    collection(db, "clubRequests"),
+    where("status", "==", "PENDING"),
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
+
+
+// - Admin: update request status
+
+export const updateClubRequest = async (requestId, data) => {
+  const ref = doc(db, "clubRequests", requestId);
+  await updateDoc(ref, data);
+};
+
+//- admin: approve
+
+export const approveClubRequest = async (requestId) => {
+  const ref = doc(db, "clubRequests", requestId);
+
+  await updateDoc(ref, {
+    status: "APPROVED",
+    reviewedAt: serverTimestamp(),
+  });
+};
+// - admin reject
+
+export const rejectClubRequest = async (requestId, reason = "") => {
+  const ref = doc(db, "clubRequests", requestId);
+
+  await updateDoc(ref, {
+    status: "REJECTED",
+    reason,
+    reviewedAt: serverTimestamp(),
+  });
+};
+
+
+// CLUBS
+
+// - Creating Clubs only after Approval
+export const createClub = async (clubId, data) => {
+  if (!clubId) {
+    throw new Error("Club ID is required");
+  }
+
+  const ref = doc(db, "clubs", clubId);
+
+  const payload = {
+    clubId,
+
+    // 🔹 Basic club info
+    clubName: data.clubName || "",
+    description: data.description || "",
+    category: data.category || [],
+
+    // 🔹 Leadership & contact
+    presidentName: data.presidentName || "",
+    email: data.email || "",
+    phone: data.phone || "",
+
+    // 🔹 Media
+    logo: data.logo || null,
+
+    // 🔹 Social links
+    socials: {
+      linkedin: data.linkedin || "",
+      instagram: data.instagram || "",
+      website: data.website || "",
+
+    },
+
+    // 🔹 System
+    isActive: true,                 // ✅ approved clubs only
+    approvedAt: serverTimestamp(),
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+
+  await setDoc(ref, payload);
+};
+
 
 /* Student event queries */
 
@@ -55,6 +246,23 @@ export const getStudentUpcomingEvents = async (studentUid)=>{
     }
 }
 
+export const getRecommendedEvents = async (interests = []) => {
+  if (!interests.length) return [];
+
+  const q = query(
+    collection(db, "events"),
+    where("status", "==", "upcoming"),
+    
+  );
+
+  const snap = await getDocs(q);
+
+  return snap.docs
+    .map((doc) => ({ id: doc.id, ...doc.data() }))
+    .filter((event) =>
+       interests.includes(event.type));
+    
+};
 
 /* Upcoming events - not registered + registered (events page) */
 

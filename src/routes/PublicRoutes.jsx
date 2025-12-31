@@ -1,5 +1,7 @@
 import React from 'react'
 import {Routes,Route} from "react-router-dom"
+import SignUpCard1 from "@/components/layout/Signup/SignUpCard1";
+
 
 import LoginPage from '../pages/public/LoginPage'
 import LandingPage from '../pages/public/LandingPage'
@@ -8,10 +10,12 @@ import SignupPage2 from '@/pages/public/SignupPage2'
 import NotFoundPage from '@/pages/public/NotFoundPage'
 import SignUpStudent from '@/components/layout/Signup/SignUpStudent'
 import SignUpClub from '@/components/layout/Signup/SignUpClub'
+import WaitingApproval from '@/pages/public/WaitingApproval'
 const PublicRoutes = () => {
   return (
     <div>
       <Routes>
+      <Route path="/signup" element={<SignUpCard1 />} />
       <Route path="login" element={<LoginPage />} />
       <Route index element={<LandingPage/>} />
       <Route path="signup1" element={<SignupPage />} />
@@ -20,7 +24,9 @@ const PublicRoutes = () => {
        <Route path="signup-student" element={<SignUpStudent/>} />
        <Route path="signup-club" element={<SignUpClub />} />
       <Route path="*" element={<NotFoundPage/>}/>
+      <Route path="/waiting-approval" element={<WaitingApproval />} />
       </Routes>
+      
     </div>
   )
 }

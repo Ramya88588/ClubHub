@@ -1,43 +1,38 @@
-import { signInWithPopup , signOut} from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { signInWithPopup, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "./firebase";
 
-const getRoleFromEmail = (email) => {
-  if (!email) return "unauthorized";
+export const googleSignIn = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
 
-  const domain = email.toLowerCase();
-  if (domain === "sjruva2006@gmail.com") return "club";
-  if (domain.endsWith("@vitapstudent.ac.in")) return "student";
-  if (domain.endsWith("@vitap.ac.in")) return "club";
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
 
-  return "unauthorized";
+    // New user - must go through signup flow
+    if (!snap.exists()) {
+      return {
+        firebaseUser: user,
+        isNewUser: true,
+      };
+    }
+
+    // Existing user
+    const userData = snap.data();
+
+    return {
+      firebaseUser: user,
+      isNewUser: false,
+      role: userData.role,
+      isApproved: userData.isApproved,
+    };
+  } catch (error) {
+    console.error("Google sign-in error:", error);
+    throw error;
+  }
 };
 
-
-export const googleSignIn = async () =>{
-    try{
-        const result = await signInWithPopup(auth, googleProvider);
-        const user =  result.user;
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
-        if(!snap.exists()){
-            const role = getRoleFromEmail(user.email);
-            const dateObj = new Date(Date.now());
-            await setDoc(userRef, {
-                uid: user.uid,
-                email: user.email,
-                role,
-                createdAt: dateObj.toUTCString(),
-            });
-            return {...user, role};
-        }
-        return {...user, role: snap.data().role};
-    }catch (error){
-        console.error("Google sign in error: ", error);
-        throw error;
-    }
-}
-
-export const logoutUser = async () =>{
+export const logoutUser = async () => {
   await signOut(auth);
-}
+};

@@ -5,12 +5,15 @@ import React,{ useEffect, useState, useRef } from 'react'
 import { getUpcomingRegisteredEvents,getStudentPastEvents } from '@/firebase/collections'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/firebase/firebase'
+import { getStudentById } from "@/firebase/collections";
 
 
 const StudentDashboard = () => {
   const [upcomingEvents , setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [student, setStudent] = useState(null);
+
   const scrollContainerRef = useRef(null);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -21,13 +24,15 @@ const StudentDashboard = () => {
 
       setLoading(true);
 
-      const [upcoming, past] = await Promise.all([
+      const [upcoming, past,studentData] = await Promise.all([
         getUpcomingRegisteredEvents(user.uid),
         getStudentPastEvents(user.uid),
+        getStudentById(user.uid),
       ]);
 
       setUpcomingEvents(upcoming);
       setPastEvents(past);
+      setStudent(studentData);
       setLoading(false);
     });
 
@@ -37,76 +42,6 @@ const StudentDashboard = () => {
     console.log("CURRENT USER UID:", auth.currentUser?.uid);
   }, []);
 
-//  const events = [
-//   {
-//     id: 1,
-//     type: "Workshop",
-//     theme: "yellow",
-//     title: "Intro to UI/UX",
-//     description: "A deep dive into user interface principles.",
-//     date: "12/10/2025",
-//     isRegistered: false,
-//   },
-//   {
-//     id: 2,
-//     type: "Hackathon",
-//     theme: "red",
-//     title: "CodeRed 2025",
-//     description: "24-hour coding marathon for developers.",
-//     date: "15/10/2025",
-//     isRegistered: true,
-//   },
-//   {
-//     id: 3,
-//     type: "Seminar",
-//     theme: "blue",
-//     title: "AI in 2029",
-//     description: "Discussing the future of Generative AI.",
-//     date: "20/11/2025",
-//     isRegistered: false,
-//   },
-//   {
-//     id: 4,
-//     type: "Meetup",
-//     theme: "green",
-//     title: "Green Tech",
-//     description: "Networking event for sustainable tech enthusiasts.",
-//     date: "05/12/2025",
-//     isRegistered: true,
-//   },
-//   {
-//     id: 5,
-//     type: "Workshop",
-//     theme: "yellow",
-//     title: "Advanced React",
-//     description: "Scaling applications in enterprise environments.",
-//     date: "10/01/2026",
-//     isRegistered: false,
-//   },
-// ];
-
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
-  //     if (!user) {
-  //       console.log("No user logged in yet");
-  //       return;
-  //     }
-
-  //     console.log("User ready:", user.uid);
-
-  //     const data = await getStudentPastEvents(user.uid);
-  //     console.log("Fetched events:", data);
-  //     setEvents(data);
-  //     setLoading(false);
-  //   });
-  //     return () => unsubscribe(); // cleanup on unmount
-  // }, []);
-  // if(loading){
-  //   return<p className="p-10">Loading past events...</p>;
-  // }
-
- // Scroll 
-  
  const scroll = (direction) => {
     if (scrollContainerRef.current) {
       const scrollAmount = 320; // Card width + gap
@@ -123,7 +58,7 @@ const StudentDashboard = () => {
   return (
    <div className="mt-18 pt-10 flex flex-col gap-10 bg-[#f2f2f2] ">
     <div className="one pl-10">
-      <p className="font-semibold text-[32px]">Welcome back, <span className="text-blue-500 font-semibold text-[32px]">user</span></p>
+      <p className="font-semibold text-[32px]">Welcome back, <span className="text-blue-500 font-semibold text-[32px]">{student.fullName}</span></p>
       <p>Explore your upcoming events and give feedback on your past events</p>
     </div>
     <div className="two flex justify-evenly py-8 bg-white">
@@ -136,7 +71,7 @@ const StudentDashboard = () => {
         <span className="font-light"> Events Attended</span>
        </div>
        <div className="cH text-yellow-500 flex flex-col items-center">
-        <p className="text-[36px]">3</p>
+        <p className="text-[36px]">-</p>
         <span className="font-light">Club Hiring</span>
        </div>
     </div>

@@ -1,48 +1,33 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import AcademicScheduleSection from "./AcademicScheduleSection";
 
 const ALL_INTERESTS = [
-  "Web Development",
-  "AI & ML",
-  "Hackathons",
-  "Competitive Coding",
-  "Design",
-  "Robotics",
-  "Art",
-  "Entertainment",
-  "CP",
-  "Music",
-  "BlockChain",
-  "GenAI",
-  "UI/UX",
-  "Java",
-  "Python",
-  "C++",
+  "Workshop", "Seminar", "Club", "Music", "Tech", "Art", "Sports", "Coding"
 ];
-const users = [
-  {
-    id: 1,
-    name: "Alex Johnson",
-    email: "alexjohnson@college.edu",
-    role: "STUDENT",
-    avatar: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex",
-    interests: ["abcdef", "Web Development", "AI & ML", "Hackathons"],
-    timetableImage: null,
-    phoneNumber: "9999999999",
-  },
-];
+// const users = [
+//   {
+//     id: 1,
+//     name: "Alex Johnson",
+//     email: "alexjohnson@college.edu",
+//     role: "STUDENT",
+//     avatar: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex",
+//     interests: ["abcdef", "Web Development", "AI & ML", "Hackathons"],
+//     timetableImage: null,
+//     phoneNumber: "9999999999",
+//   },
+// ];
 
-const PreferencesSection = () => {
+const PreferencesSection = ({student, onUpdate}) => {
   // UI state from backend
-  const [selectedInterests, setSelectedInterests] = useState(
-    users[0].interests
-  );
-  const [timetableImage, setTimetableImage] = useState(
-  users[0].timetableImage
-);
-
-
+  const [selectedInterests, setSelectedInterests] = useState([]);
+  const [timetableImage, setTimetableImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(()=>{
+    if(!student) return;
+    setSelectedInterests(student.preferences?.interest || []);
+    setTimetableImage(student.preferences?.academicScheduleURL || null);
+  }, [student]);
 
   // toggle interest
   const handleToggle = (interest) => {
@@ -55,19 +40,20 @@ const PreferencesSection = () => {
     }
   };
 
-  // save to backend
-const handleSave = () => {
-  users[0] = {
-    ...users[0],
-    interests: selectedInterests,
-    timetableImage: timetableImage,
+  
+  const handleSave = () => {
+    onUpdate({
+      preferences:{
+        interest: selectedInterests,
+        academicScheduleURL: timetableImage,
+      },
+    });
+
+    setIsEditing(false);
+    console.log("Backend updated:", student);
   };
 
-  setIsEditing(false);
-  console.log("Backend updated:", users);
-};
-
-
+  if (!student) return null;
   return (
     <div className=" space-y-4">
       {/* Header */}

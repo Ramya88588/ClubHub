@@ -1,17 +1,77 @@
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { auth } from "@/firebase/firebase";
+import { createStudent } from "@/firebase/collections";
+import { createUser } from "@/firebase/collections"
 
 const SignUpStudent = () => {
+  const navigate = useNavigate();
+  const user = auth.currentUser;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    // later → send to backend / firebase
-  };
+  // Safety check
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
+
+  // const onSubmit = async (data) => {
+  //   try {
+  //     const phoneNumber = `${data.countryCode}${data.phone}`;
+
+  //     await createStudentProfile(user.uid, {
+  //       name: data.fullName,
+  //       phoneNumber,
+  //       email: user.email,
+  //     });
+
+  //     // Redirect to student dashboard
+  //     navigate("/student");
+  //   } catch (error) {
+  //     console.error("Student signup failed:", error);
+  //     alert("Something went wrong. Please try again.");
+  //   }
+  // };
+
+  const onSubmit = async (data) => {
+    try {
+      const user = auth.currentUser;
+
+      if (!user) {
+        alert("Not authenticated");
+        return;
+      }
+
+      await createUser(user.uid, {
+        email: user.email,
+        role: "STUDENT",
+        isApproved: true,
+        isActive: true,
+        fullName: data.fullName,
+        phone: `${data.countryCode}${data.phone}`,
+        createdAt: new Date(),
+      });
+
+      
+      // await createStudent(user.uid, { ... })
+      await createStudent(user.uid, {
+        fullName: data.fullName,
+        email: user.email,
+        phone: `${data.countryCode}${data.phone}`,
+        photoURL: user.photoURL,
+      });
+      navigate("/student");
+    } catch (err) {
+      console.error("Signup failed:", err);
+      alert("Signup failed");
+    }
+  };  
 
   return (
     <div className="bg-[#f8f9fa] min-h-screen flex items-center px-4 justify-center">

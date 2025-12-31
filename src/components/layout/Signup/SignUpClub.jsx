@@ -1,29 +1,41 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-
-// mock backend (for now)
-const clubs = [];
-
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "@/firebase/firebase";
+import { createClubRequest } from "@/firebase/collections";
+import { useState, useEffect } from "react";
 const SignUpClub = () => {
+  const navigate = useNavigate();
+  const user = auth.currentUser;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    const payload = {
-      id: Date.now(),
-      clubName: data.clubName,
-      clubHeadName: data.clubHeadName,
-      role: "CLUB",
-      status: "PENDING_APPROVAL",
-      createdAt: new Date().toISOString(),
-    };
+  // Safety check
+  useEffect(() => {
+    if (!auth.currentUser) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
-    clubs.push(payload);
+  const onSubmit = async (data) => {
+    try {
+      await createClubRequest(user.uid, {
+        clubName: data.clubName,
+        presidentName: data.presidentName,
+        email: user.email,
+        // phone: data.phone,
+        //description: data.description,
+      });
 
-    console.log("Club approval request sent:", clubs);
+      // Redirect to waiting approval page
+      navigate("/waiting-approval");
+    } catch (error) {
+      console.error("Club request failed:", error);
+      alert("Failed to submit approval request. Try again.");
+    }
   };
 
   return (
@@ -103,7 +115,7 @@ const SignUpClub = () => {
               type="text"
               placeholder="Enter club head name"
               className="border rounded-md p-2 w-full bg-[#f8f9fa]"
-              {...register("clubHeadName", {
+              {...register("presidentName", {
                 required: "Club head name is required",
               })}
             />

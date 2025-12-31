@@ -10,10 +10,10 @@ import NotFoundPage from "@/pages/public/NotFoundPage";
 export default function AppRoutes() {
   return (
     <Routes>
-     
+      {/* Public */}
       <Route path="/*" element={<PublicRoutes />} />
-      
 
+      {/* Student */}
       <Route
         path="/student/*"
         element={
@@ -23,6 +23,7 @@ export default function AppRoutes() {
         }
       />
 
+      {/* Club */}
       <Route
         path="/club/*"
         element={
@@ -32,6 +33,7 @@ export default function AppRoutes() {
         }
       />
 
+      {/* Admin */}
       <Route
         path="/admin/*"
         element={
@@ -40,7 +42,10 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
-     
+
+      {/* 404 */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
+

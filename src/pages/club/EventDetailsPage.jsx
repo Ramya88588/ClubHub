@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import mapImg from "@/assets/map.png";
 import { getEventById } from "@/firebase/collections";
+import { updateDoc,deleteDoc, doc } from "firebase/firestore";
+import { db } from "@/firebase/firebase";
+import { auth } from "@/firebase/firebase";
+
+
 // Using a URL fallback since local assets might not render in this preview
 
 const FALLBACK_IMAGE =
@@ -83,13 +88,28 @@ const EventDetailsPage = () => {
 
   // Fallback to default if ID not found
   //const event = eventsData[id] || eventsData.default;
-  
+
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-  useEffect(()=>{
+
+  useEffect(() => {
     const fetchEvent = async () => {
       try {
         const data = await getEventById(id);
+
+        if (!data) {
+          setEvent(null);
+          setLoading(false);
+          return;
+        }
+
+        const user = auth.currentUser;
+        if (!user || data.clubId !== user.uid) {
+          alert("You are not allowed to access this event");
+          navigate("/club");
+          return;
+        }
+
         setEvent(data);
       } catch (err) {
         console.error("Error fetching event:", err);
@@ -100,10 +120,34 @@ const EventDetailsPage = () => {
     };
 
     fetchEvent();
-  }, [id]);
+  }, [id, navigate]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
+
+  const handleDelete = async () => {
+    if (!event) return;
+
+    const confirmDelete = window.confirm("Delete this event?");
+    if (!confirmDelete) return;
+
+    await deleteDoc(doc(db, "events", event.id));
+    alert("Event deleted");
+    navigate("/club");
+  };
+
+  const handleCloseRegistration = async () => {
+    if (!event) return;
+
+    await updateDoc(doc(db, "events", event.id), {
+      status: "closed",
+    });
+
+    alert("Registrations closed");
+    setEvent({ ...event, status: "closed" });
+  };
+
 
   if (loading) {
     return <div className="p-10 text-center">Loading event...</div>;
@@ -379,7 +423,7 @@ const EventDetailsPage = () => {
                         Club
                       </p>
                       <p className="text-gray-900 font-semibold text-xs">
-                        {event.clubname}
+                        {event.clubName}
                       </p>
                     </div>
                   </div>
@@ -400,19 +444,21 @@ const EventDetailsPage = () => {
                     </div>
 
                     {/* Delete Button */}
-                    <button className="py-2 bg-red-500 text-white rounded-xl   hover:bg-red-600 transition active:scale-95 shadow">
+                    <button onClick={handleDelete} className="py-2 bg-red-500 text-white rounded-xl   hover:bg-red-600 transition active:scale-95 shadow">
                       Delete Event
                     </button>
 
                     {/* Edit Button */}
                     <button
+                      type="button"
                       onClick={() => navigate(`/club/edit-event/${event.id}`)}
                       className="py-2 border border-red-500 text-red-500 rounded-xl hover:bg-red-50 transition active:scale-95"
                     >
                       Edit Event
                     </button>
                     <button
-                      onClick={() => navigate(`/club/edit-event/${event.id}`)}
+                      type="button"
+                      onClick={handleCloseRegistration}
                       className="py-2 border border-green-500 text-green-500 rounded-xl hover:bg-green-50 transition active:scale-95"
                     >
                       Close Registrations

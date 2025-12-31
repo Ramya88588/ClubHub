@@ -1,21 +1,25 @@
 
 import React from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import { googleSignIn } from "@/firebase/auth";
 
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { googleSignIn } from "@/firebase/auth";
+const SingUpCard2 = ({ txt, onGoogleLogin ,children }) => {
+  // const navigate = useNavigate();
 
-const SingUpCard2 = ({txt,children}) => {
-  const navigate = useNavigate();
-   const handleGoogleLogin = async () =>{
-    try{
-      const user = await googleSignIn();
-      navigate(`/${user.role}`); // student / club / admin
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     const result = await googleSignIn();
 
-    }catch(err){
-      console.error("Login failed : " ,err);
-    }
-  }
+  //     if (result.isNewUser) {
+  //       navigate("/signup");
+  //       return;
+  //     }
+
+  //     navigate("/");
+  //   } catch (err) {
+  //     console.error("Login failed:", err);
+  //   }
+  // };
   return (
     <div className="min-h-screen flex items-center justify-center min-w-screen">
       <div className="card w-176 h-100 bg-base-100 card-xl shadow-sm flex items-center justify-center gap-6">
@@ -61,7 +65,7 @@ const SingUpCard2 = ({txt,children}) => {
           {(
             <div className="mx-auto">
               <button
-                onClick={handleGoogleLogin}
+                onClick={onGoogleLogin}
                 className="btn btn-primary rounded-2xl px-10"
               >
                 Sign {txt} with Google
