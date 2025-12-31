@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "@/firebase/firebase";
 import { createClubRequest } from "@/firebase/collections";
-
+import { useState, useEffect } from "react";
 const SignUpClub = () => {
   const navigate = useNavigate();
   const user = auth.currentUser;
@@ -14,18 +14,20 @@ const SignUpClub = () => {
   } = useForm();
 
   // Safety check
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!auth.currentUser) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const onSubmit = async (data) => {
     try {
-      await createClubRequest({
-        uid: user.uid,
+      await createClubRequest(user.uid, {
         clubName: data.clubName,
-        presidentName: data.clubHeadName,
+        presidentName: data.presidentName,
         email: user.email,
+        // phone: data.phone,
+        //description: data.description,
       });
 
       // Redirect to waiting approval page
@@ -113,7 +115,7 @@ const SignUpClub = () => {
               type="text"
               placeholder="Enter club head name"
               className="border rounded-md p-2 w-full bg-[#f8f9fa]"
-              {...register("clubHeadName", {
+              {...register("presidentName", {
                 required: "Club head name is required",
               })}
             />

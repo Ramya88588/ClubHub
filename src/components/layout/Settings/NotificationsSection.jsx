@@ -1,32 +1,54 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import ToggleItem from "./Toggle";
 
-const users = [
-  {
-    id: 1,
-    notifications: {
-      eventReminders: true,
-      hiringAlerts: false,
-      feedbackRequests: true,
-    },
-  },
-];
+// const users = [
+//   {
+//     id: 1,
+//     notifications: {
+//       eventReminders: true,
+//       hiringAlerts: false,
+//       feedbackRequests: true,
+//     },
+//   },
+// ];
 
-const NotificationsSection = () => {
-  const [notifications, setNotifications] = useState(users[0].notifications);
+const NotificationsSection = ({student,onUpdate}) => {
+  const [notifications, setNotifications] = useState({
+    eventReminders: false,
+    hiringAlerts: false,
+    feedbackRequests: false,
+  });
+
+  useEffect(()=>{
+    if(!student?.notifications) return;
+
+    setNotifications({
+      eventReminders: student.notifications.eventReminders ?? false,
+      hiringAlerts : student.notifications.hiringAlerts ?? false,
+      feedbackRequests: student.notifications.feedbackRequests ?? false,
+    });
+  },[student]);
 
   const handleToggle = (key) => {
-    setNotifications((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    const updated = {
+      ...notifications,
+      [key]: !notifications[key],
+    };
+
+    setNotifications(updated);
+
+    
+    onUpdate({
+      notifications: updated,
+    });
   };
 
+  if (!student) return null;
   return (
     <div className="mt-10 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <span class="material-symbols-outlined text-blue-500" style={{ fontSize: "32px" }}>edit_notifications</span>
+        <span className="material-symbols-outlined text-blue-500" style={{ fontSize: "32px" }}>edit_notifications</span>
         <h2 className="text-[26px]">Notifications</h2>
       </div>
 

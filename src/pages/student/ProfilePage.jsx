@@ -1,17 +1,41 @@
 import { useNavigate } from "react-router-dom";
 import { Settings } from "lucide-react";
+import { useEffect, useState } from "react";
 
-const user = {
-  name: "Alex Johnson",
-  email: "alexjohnson@college.edu",
-  role: "STUDENT",
-  avatar: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex",
-  interests: ["Web Development", "AI & ML", "Hackathons"],
-  timetableImage: null, // ✅ comma fixed
-};
+import { auth } from "@/firebase/firebase";
+import { getStudentById } from "@/firebase/collections";
+// const user = {
+//   name: "Alex Johnson",
+//   email: "alexjohnson@college.edu",
+//   role: "STUDENT",
+//   avatar: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex",
+//   interests: ["Web Development", "AI & ML", "Hackathons"],
+//   timetableImage: null, // ✅ comma fixed
+// };
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const [student, setStudent] = useState([]);
+  const [loading,setLoading] = useState(true);
+ 
 
+  useEffect(()=>{
+    const fetchStudent = async () =>{
+      const user = auth.currentUser;
+      if(!user);
+      const studentData = await getStudentById(user.uid);
+      setStudent(studentData);
+      setLoading(false);
+    };
+    fetchStudent();
+  },[]);
+  if(loading) {
+    return <div className="p-6">Loading profile...</div>
+  }
+  if(!student) {
+    return <div className="p-6">Profile not found</div>
+  }
+  const interest = student.preferences?.interest || [];
+  const timetableImage = student.preferences?.academicScheduleURL || null;
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
 
@@ -26,16 +50,16 @@ const ProfilePage = () => {
       {/* Profile */}
       <div className="flex flex-col items-center text-center">
         <img
-          src={user.avatar}
+          src={student.avatar || "https://api.dicebear.com/7.x/fun-emoji/svg?seed=User"}
           alt="avatar"
           className="w-28 h-28 rounded-full"
         />
         
-        <h2 className="mt-3 font-semibold text-lg">{user.name}</h2>
+        <h2 className="mt-3 font-semibold text-lg">{student.profile?.displayName}</h2>
         <h2>hello</h2>
-        <p className="text-sm text-gray-500">{user.email}</p>
+        <p className="text-sm text-gray-500">{student.profile?.email}</p>
         <span className="mt-2 text-xs px-3 py-1 rounded bg-blue-100 text-blue-600">
-          {user.role}
+          student
         </span>
       </div>
 
@@ -45,13 +69,13 @@ const ProfilePage = () => {
           ⚙ Preferences
         </div>
 
-        {user.interests.length > 0 ? (
+        {interest.length > 0 ? (
             <div>
                 <p className="text-sm text-gray-500">Selected Preferences for event Recommendations</p>
           <div className="flex flex-wrap gap-2 mt-3">
             
            
-            {user.interests.map((interest) => (
+            {interest.map((interest) => (
               <span
                 key={interest}
                 className="px-3 py-1 bg-blue-50 text-blue-600 text-sm rounded-full"
@@ -72,9 +96,9 @@ const ProfilePage = () => {
       <div className="bg-white border rounded-xl p-6 space-y-4">
         <h3 className="font-medium text-gray-800">Academic Schedule</h3>
 
-        {user.timetableImage ? (
+        {timetableImage ? (
           <img
-            src={user.timetableImage}
+            src={timetableImage}
             alt="Timetable"
             className="w-full max-w-xl mx-auto rounded-lg border"
           />
