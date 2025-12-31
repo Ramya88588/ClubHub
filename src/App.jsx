@@ -1,6 +1,6 @@
 import React from "react";
 import AppRoutes from "./routes";
-import AIChatbot from "./components/ai/AIChatbot";
+import AIChatbot from "./components/chatbot/AIChatbot";
 
 const App = () => {
   return (

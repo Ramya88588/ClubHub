@@ -4,7 +4,7 @@ export async function callPuterGemini(prompt) {
   }
 
   const response = await window.puter.ai.chat(prompt, {
-    model: "gemini-3-flash-preview",
+    model: "gemini-2.5-flash",
   });
 
   if (response?.message?.content) {

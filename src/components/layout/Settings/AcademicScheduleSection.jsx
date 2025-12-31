@@ -1,14 +1,36 @@
+import { uploadTimetableImage } from "@/firebase/uploadTimetable";
+import { getTimetableFromUpload } from "@/ai/timetable";
+import { auth } from "@/firebase/firebase";
+
 const AcademicScheduleSection = ({
   timetableImage,
   isEditing,
   onTimetableChange,
 }) => {
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || !isEditing) return;
 
-    const imageURL = URL.createObjectURL(file);
-    onTimetableChange(imageURL);
+    // 🔹 UI preview (unchanged behavior)
+    const previewUrl = URL.createObjectURL(file);
+    onTimetableChange(previewUrl);
+
+    try {
+      // 🔹 Upload to Firebase Storage
+      const publicUrl = await uploadTimetableImage(
+        file,
+        auth.currentUser?.uid || "anonymous"
+      );
+
+      console.log("Firebase Storage URL:", publicUrl);
+
+      // 🔹 Extract timetable JSON via AI
+      const timetableJSON = await getTimetableFromUpload(publicUrl);
+
+      console.log("Extracted timetable JSON:", timetableJSON);
+    } catch (err) {
+      console.error("Timetable AI error:", err.message);
+    }
   };
 
   return (
