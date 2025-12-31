@@ -181,7 +181,7 @@ const ClubDashboard = () => {
               <Users className="w-8 text-blue-500" />
               Manage Members
             </div>
-            <div className="flex items-center p-2  gap-2 ">
+            <div className="flex items-center p-2  gap-2 cursor-pointer" onClick={()=>{navigate("/club/announcements")}}>
               <Send className="w-8  text-red-500" />
               Send Announcement
             </div>

@@ -10,45 +10,46 @@ import EventDetailsPage from "@/pages/club/EventDetailsPage";
 import DraftEventsPage from "@/pages/club/DraftEventsPage";
 import Settings from "@/pages/club/Settings";
 import NotFoundPage from "@/pages/public/NotFoundPage";
+import Announcements from "@/pages/club/AnnouncementsPage";
 
 const ClubRoutes = () => {
-  const [userDoc, setUserDoc] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [userDoc, setUserDoc] = useState(null);
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = auth.currentUser;
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const user = auth.currentUser;
+  //     if (!user) {
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      const data = await getUserById(user.uid);
-      setUserDoc(data);
-      setLoading(false);
-    };
+  //     const data = await getUserById(user.uid);
+  //     setUserDoc(data);
+  //     setLoading(false);
+  //   };
 
-    fetchUser();
-  }, []);
+  //   fetchUser();
+  // }, []);
 
-  // ⏳ Loading state
-  if (loading) {
-    return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        Loading club dashboard...
-      </div>
-    );
-  }
+  // // ⏳ Loading state
+  // if (loading) {
+  //   return (
+  //     <div className="w-screen h-screen flex items-center justify-center">
+  //       Loading club dashboard...
+  //     </div>
+  //   );
+  // }
 
-  // ❌ No user doc or wrong role
-  if (!userDoc || userDoc.role !== "CLUB") {
-    return <Navigate to="/login" replace />;
-  }
+  // // ❌ No user doc or wrong role
+  // if (!userDoc || userDoc.role !== "CLUB") {
+  //   return <Navigate to="/login" replace />;
+  // }
 
-  // ⏸ Club not approved
-  if (userDoc.isApproved === false) {
-    return <Navigate to="/waiting-approval" replace />;
-  }
+  // // ⏸ Club not approved
+  // if (userDoc.isApproved === false) {
+  //   return <Navigate to="/waiting-approval" replace />;
+  // }
 
   // ✅ Approved club → allow routes
   return (
@@ -58,6 +59,8 @@ const ClubRoutes = () => {
       <Route path="edit-event/:id" element={<EditEventPage />} />
       <Route path="draftEvents" element={<DraftEventsPage />} />
       <Route path="settings" element={<Settings />} />
+       <Route path="announcements" element={<Announcements />} />
+  
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
