@@ -203,6 +203,14 @@ export const createClub = async (clubId, data) => {
   await setDoc(ref, payload);
 };
 
+export const updateClub = async (clubId, updates) => {
+  const ref = doc(db, "clubs", clubId);
+  await updateDoc(ref, {
+    ...updates,
+    updatedAt: serverTimestamp(),
+  });
+};
+
 
 /* Student event queries */
 
@@ -409,4 +417,23 @@ export const getClubPastEvents = async (clubId) => {
     console.error("Error fetching club past events:", err);
     return [];
   }
+};
+
+// club hiring 
+export const updateClubHiring = async (clubId, updates) => {
+  const ref = doc(db, "clubs", clubId);
+  await updateDoc(ref, updates);
+};
+
+//club preferences 
+
+
+export const updateClubPreferences = async (clubId, preferences) => {
+  if (!clubId) throw new Error("Club ID missing");
+
+  const ref = doc(db, "clubs", clubId);
+  await updateDoc(ref, {
+    preferences,
+    updatedAt: new Date(),
+  });
 };
