@@ -58,7 +58,7 @@ const StudentDashboard = () => {
   return (
    <div className="mt-18 pt-10 flex flex-col gap-10 bg-[#f2f2f2] ">
     <div className="one pl-10">
-      <p className="font-semibold text-[32px]">Welcome back, <span className="text-blue-500 font-semibold text-[32px]">user</span></p>
+      <p className="font-semibold text-[32px]">Welcome back, <span className="text-blue-500 font-semibold text-[32px]">{student.fullName}</span></p>
       <p>Explore your upcoming events and give feedback on your past events</p>
     </div>
     <div className="two flex justify-evenly py-8 bg-white">
