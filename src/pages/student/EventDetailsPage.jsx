@@ -1,87 +1,27 @@
 import React, { useEffect , useState} from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import mapImg from "@/assets/map.png";
-import { getEventById ,registerForEvent, trackEventView} from "@/firebase/collections";
+import { getEventById ,registerForEvent, unregisterFromEvent,trackEventView} from "@/firebase/collections";
 import { auth } from "@/firebase/firebase";
+import RegisterModal from "@/components/shared/RegisterModal";
+
 // Using a URL fallback since local assets might not render in this preview
 
 const EventDetailsPage = () => {
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+  const student = {
+    name: auth.currentUser?.displayName || "Student",
+    email: auth.currentUser?.email || "",
+  };
+
   const { id } = useParams();
   const navigate = useNavigate();
   //Fallback image
   const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80";
-  // Mock Database
-  // const eventsData = {
-  //   1: {
-  //     id: 1,
-  //     title: "React Patterns Workshop",
-  //     club: "Coding Club",
-  //     type: "Workshop",
-  //     date: "October 10, 2026",
-  //     time: "10:00 AM - 4:00 PM",
-  //     location: "Main Auditorium, Block A",
-  //     image:
-  //       "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=1200&q=80",
-  //     description:
-  //       "Join us for an intensive deep dive into advanced React patterns. We will cover Higher-Order Components, Render Props, Custom Hooks, and the latest React Server Components. This workshop is designed for developers who want to scale their applications efficiently.",
-  //     highlights: [
-  //       "Master Custom Hooks for reusable logic",
-  //       "Deep dive into React Server Components (RSC)",
-  //       "Performance optimization techniques",
-  //       "Live coding sessions with industry experts",
-  //       "Networking with 50+ developers",
-  //     ],
-  //     gFormLink: "https://docs.google.com/forms/d/e/1FAIpQLSfDxk...",
-  //     organizer: "Sarah Jenkins",
-  //     contact: "sarah.j@university.edu",
-  //     registeredMembers:100
-  //   },
-  //   2: {
-  //     id: 2,
-  //     title: "Badminton Open Championship",
-  //     club: "Sports Society",
-  //     type: "Sports",
-  //     date: "January 12, 2026",
-  //     time: "9:00 AM - 6:00 PM",
-  //     location: "University Sports Complex",
-  //     image:
-  //       "https://images.unsplash.com/photo-1626224583764-84786c713cd3?auto=format&fit=crop&w=1200&q=80",
-  //     description:
-  //       "The annual Inter-college Badminton Championship is here! Watch the best players from across the campus compete for the trophy. Open to all students and faculty.",
-  //     highlights: [
-  //       "Singles and Doubles categories",
-  //       "Professional referees",
-  //       "Cash prizes worth $500",
-  //       "Refreshments provided for all participants",
-  //       "Finals streamed live on campus TV",
-  //     ],
-  //     gFormLink: "https://docs.google.com/forms/u/0/",
-  //     organizer: "Coach Mike",
-  //     contact: "sports@university.edu",
-  //     registeredMembers:50
-  //   },
-  //   default: {
-  //     id: 0,
-  //     title: "Event Details Unavailable",
-  //     club: "Unknown Club",
-  //     type: "Event",
-  //     date: "TBD",
-  //     time: "TBD",
-  //     location: "TBD",
-  //     image:
-  //       "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80",
-  //     description: "We couldn't find the details for this specific event.",
-  //     highlights: [],
-  //     gFormLink: "#",
-  //     organizer: "N/A",
-  //     contact: "help@university.edu",
-  //     registeredMembers:0,
-  //   },
-  // };
+const [isRegistered, setIsRegistered] = useState(false);
 
-  // Fallback to default if ID not found
-  //const event = eventsData[id] || eventsData.default;
 const [event, setEvent] = useState(null);
 const [loading, setLoading] = useState(true);
 
@@ -112,6 +52,17 @@ useEffect(() => {
 
   fetchEvent();
 }, [id]);
+
+useEffect(() => {
+  if (!event || !auth.currentUser) return;
+
+  const uid = auth.currentUser.uid;
+
+  // ✅ PRIMARY SOURCE OF TRUTH
+  if (Array.isArray(event.registeredUsers)) {
+    setIsRegistered(event.registeredUsers.includes(uid));
+  }
+}, [event]);
 
 
   useEffect(() => {
@@ -151,6 +102,7 @@ useEffect(() => {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50 px-8 py-4 md:px-12 md:py-4 animate-fade-in ">
       <div className="max-w-4xl mx-auto">
         {/* BACK BUTTON */}
@@ -409,10 +361,39 @@ useEffect(() => {
                       </button>
 
                       <button
-                        onClick={handleRegister}
+                        onClick={async () => {
+                          if (!auth.currentUser) {
+                            alert("Please login first");
+                            return;
+                          }
+
+                          if (isRegistered) {
+                            const confirm = window.confirm(
+                              "Are you sure you want to unregister?"
+                            );
+                            if (!confirm) return;
+                            const uid = auth.currentUser.uid;
+                            console.log("Before unregister:", event.registeredUsers);
+
+                            await unregisterFromEvent(event.id, auth.currentUser.uid);
+                            console.log("Unregister called for:", uid);
+
+                            setEvent((prev) => ({
+                              ...prev,
+                              registeredUsers: prev.registeredUsers.filter(
+                                (id) => id !== uid
+                              ),
+                            }));
+
+                            // 🔥 RE-CHECK FROM FIRESTORE
+                          } else {
+                            setShowRegisterModal(true);
+                          }
+                        }}
+
                         className="w-full py-2 bg-blue-500 text-white rounded-xl  hover:bg-blue-400 transition-transform active:scale-95 shadow-lg flex justify-center items-center gap-2"
                       >
-                        Register Now
+                        {isRegistered ? "Unregister" : "Register Now"}
                         <svg
                           className="w-5 h-5"
                           fill="none"
@@ -440,7 +421,31 @@ useEffect(() => {
         </div>
       </div>
     </div>
+  
+    <RegisterModal
+      isOpen={showRegisterModal}
+      onClose={() => setShowRegisterModal(false)}
+      student={student}
+      event={event}
+      onConfirm={async () => {
+        const uid = auth.currentUser.uid;
+
+        await registerForEvent(event.id, uid);
+
+        // 🔥 UPDATE LOCAL EVENT STATE
+        setEvent((prev) => ({
+          ...prev,
+          registeredUsers: [...(prev.registeredUsers || []), uid],
+        }));
+
+        setShowRegisterModal(false);
+        alert("Registration successful!");
+      }}
+
+    />
+  </>
   );
+
 };
 
 export default EventDetailsPage;
