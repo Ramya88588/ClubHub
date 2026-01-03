@@ -144,7 +144,6 @@ const SignUpCard1 = () => {
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
       <div className="max-w-4xl w-full bg-white shadow-sm rounded-md p-10 text-center">
-
         {/* Header */}
         <h1 className="font-semibold text-3xl">Join the community</h1>
         <p className="font-light text-xl mt-2">
@@ -153,7 +152,6 @@ const SignUpCard1 = () => {
 
         {/* Cards */}
         <div className="flex gap-10 mt-10 flex-col md:flex-row justify-center">
-
           {/* Student */}
           <div
             onClick={handleStudent}
@@ -199,7 +197,6 @@ const SignUpCard1 = () => {
               Continue as Club Leader
             </button>
           </div>
-
         </div>
       </div>
     </div>

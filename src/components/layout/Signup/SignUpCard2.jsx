@@ -1,9 +1,8 @@
-
 import React from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import { googleSignIn } from "@/firebase/auth";
 
-const SingUpCard2 = ({ txt, onGoogleLogin ,children }) => {
+const SingUpCard2 = ({ txt, onGoogleLogin, children }) => {
   // const navigate = useNavigate();
 
   // const handleGoogleLogin = async () => {
@@ -61,8 +60,10 @@ const SingUpCard2 = ({ txt, onGoogleLogin ,children }) => {
           ClubHub
         </h2>
         <div className="mx-auto flex flex-col gap-3">
-          <p className="font-extralight text-center text-[32px]">Sign {txt} to continue</p>
-          {(
+          <p className="font-extralight text-center text-[32px]">
+            Sign {txt} to continue
+          </p>
+          {
             <div className="mx-auto">
               <button
                 onClick={onGoogleLogin}
@@ -71,13 +72,13 @@ const SingUpCard2 = ({ txt, onGoogleLogin ,children }) => {
                 Sign {txt} with Google
               </button>
             </div>
-          )}
+          }
           <p className="font-light mt-3">
             By signing in, you agree to our{" "}
             <span className="text-blue-500">Terms </span>and{" "}
             <span className="text-blue-500">Privacy Policy</span>
           </p>
-         {children}
+          {children}
         </div>
       </div>
     </div>

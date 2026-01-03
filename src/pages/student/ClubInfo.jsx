@@ -1,24 +1,18 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  BrowserRouter, 
-  Routes, 
-  Route, 
-  useNavigate 
-} from 'react-router-dom';
-import { 
-  Search, 
-  ArrowRight, 
-  Users, 
-  Code, 
-  Mic, 
-  Palette, 
-  Cpu, 
+import React, { useState, useMemo } from "react";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  Search,
+  ArrowRight,
+  Users,
+  Code,
+  Mic,
+  Palette,
+  Cpu,
   Globe,
   ChevronDown,
   ExternalLink,
-  Mail
-} from 'lucide-react';
-
+  Mail,
+} from "lucide-react";
 
 const ClubInfo = () => {
   const navigate = useNavigate();
@@ -28,20 +22,21 @@ const ClubInfo = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   // --- MOCK DATA ---
-  
-  const announcements=[
+
+  const announcements = [
     {
-      id:1,
-      name:"The Coding Club",
-      description:"The Event code your way has been postponed due to some technical issues"
+      id: 1,
+      name: "The Coding Club",
+      description:
+        "The Event code your way has been postponed due to some technical issues",
     },
     {
-      id:2,
-      name:"The Arts Club",
-      description:"The Event Art competition has been started"
-    }
-  ]
-    const clubs = [
+      id: 2,
+      name: "The Arts Club",
+      description: "The Event Art competition has been started",
+    },
+  ];
+  const clubs = [
     {
       id: 1,
       name: "Coding Club",
@@ -49,10 +44,11 @@ const ClubInfo = () => {
       hiringStatus: "Hiring", // Status: Hiring
       applyLink: "https://docs.google.com/forms/", // Google Form Link
       email: "coding.club@college.edu",
-      description: "A community of developers building real-world projects, hosting hackathons, and learning modern tech stacks like React, Node.js, and AI.",
+      description:
+        "A community of developers building real-world projects, hosting hackathons, and learning modern tech stacks like React, Node.js, and AI.",
       icon: Code,
       color: "bg-blue-600",
-      members: "1.2k"
+      members: "1.2k",
     },
     {
       id: 2,
@@ -61,10 +57,11 @@ const ClubInfo = () => {
       hiringStatus: "Closed", // Status: Closed
       applyLink: "#",
       email: "robotics.head@college.edu",
-      description: "Designing and building autonomous robots. We participate in national competitions and hold workshops on Arduino and IoT.",
+      description:
+        "Designing and building autonomous robots. We participate in national competitions and hold workshops on Arduino and IoT.",
       icon: Cpu,
       color: "bg-indigo-600",
-      members: "850"
+      members: "850",
     },
     {
       id: 3,
@@ -73,10 +70,11 @@ const ClubInfo = () => {
       hiringStatus: "Hiring",
       applyLink: "https://docs.google.com/forms/",
       email: "arts.design@college.edu",
-      description: "For the creatives. We organize exhibitions, UI/UX workshops, and sketching sessions to foster artistic expression.",
+      description:
+        "For the creatives. We organize exhibitions, UI/UX workshops, and sketching sessions to foster artistic expression.",
       icon: Palette,
       color: "bg-pink-500",
-      members: "600"
+      members: "600",
     },
     {
       id: 4,
@@ -85,10 +83,11 @@ const ClubInfo = () => {
       hiringStatus: "Opening Soon", // Status: Opening Soon
       applyLink: "#",
       email: "debate.society@college.edu",
-      description: "Fostering critical thinking and public speaking skills through competitive debating, model UNs, and weekly group discussions.",
+      description:
+        "Fostering critical thinking and public speaking skills through competitive debating, model UNs, and weekly group discussions.",
       icon: Mic,
       color: "bg-orange-500",
-      members: "450"
+      members: "450",
     },
     {
       id: 5,
@@ -97,11 +96,12 @@ const ClubInfo = () => {
       hiringStatus: "Open", // Treating 'Open' same as 'Hiring' for this example
       applyLink: "https://docs.google.com/forms/",
       email: "nss@college.edu",
-      description: "Giving back to the community through organized drives, teaching sessions for underprivileged kids, and environmental campaigns.",
+      description:
+        "Giving back to the community through organized drives, teaching sessions for underprivileged kids, and environmental campaigns.",
       icon: Globe,
       color: "bg-green-600",
-      members: "1.5k"
-    }
+      members: "1.5k",
+    },
   ];
 
   // --- LOGIC: EXTRACT CATEGORIES ---
@@ -176,12 +176,12 @@ const ClubInfo = () => {
       </div>
 
       {/* CLUBS GRID */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-4 bg-white rounded-3xl">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-4 bg-white rounded-xl">
         <div className="relative self-end">
           <select
             value={activeCategory}
             onChange={(e) => setActiveCategory(e.target.value)}
-            className="w-full md:w-48 appearance-none bg-gray-100 border-none rounded-xl py-3 pl-4 pr-10 focus:ring-2 focus:ring-blue-500/20 outline-none font-medium cursor-pointer justify-end"
+            className="w-full md:w-48 appearance-none bg-gray-100 border-none rounded-md py-3 pl-4 pr-10 focus:ring-2 focus:ring-blue-500/20 outline-none font-medium cursor-pointer justify-end"
           >
             {categories.map((category) => (
               <option key={category} value={category}>
@@ -199,17 +199,17 @@ const ClubInfo = () => {
               {filteredClubs.map((club) => (
                 <div
                   key={club.id}
-                  className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full cursor-pointer"
+                  className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full cursor-pointer"
                 >
                   {/* Card Header */}
                   <div className="flex justify-between items-start mb-6">
                     <div
-                      className={`w-14 h-14 rounded-2xl ${club.color} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}
+                      className={`w-14 h-14 rounded-md ${club.color} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}
                     >
                       <club.icon size={28} />
                     </div>
                     <div
-                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                      className={`px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-wider ${
                         club.hiringStatus === "Hiring" ||
                         club.hiringStatus === "Open"
                           ? "bg-green-100 text-green-700 border border-green-200"
@@ -228,7 +228,7 @@ const ClubInfo = () => {
                       </h3>
                     </div>
                     <div className="mb-4">
-                      <span className="inline-block px-2 py-1 bg-gray-100  text-xs rounded-md">
+                      <span className="inline-block px-2 py-1 bg-gray-100  text-xs rounded-xs">
                         {club.category}
                       </span>
                     </div>
@@ -239,18 +239,20 @@ const ClubInfo = () => {
 
                   {/* Card Footer */}
                   <div className="p-2 border-t border-gray-100 text-[16px] font-light text-black-500/75">
-                        {/* CASE 1: HIRING */}
-                    {(club.hiringStatus === 'Hiring' || club.hiringStatus === 'Open') && (
+                    {/* CASE 1: HIRING */}
+                    {(club.hiringStatus === "Hiring" ||
+                      club.hiringStatus === "Open") && (
                       <div className="flex items-center justify-between">
-                      <a 
-                        href={club.applyLink}
-                        target="_blank"
-                        rel="noopener noreferrer" 
-                        className=" px-12 py-2 bg-blue-500 text-white rounded-sm
+                        <a
+                          href={club.applyLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className=" px-12 py-2 bg-blue-500 text-white rounded-sm
                         hover:bg-blue-500/50 transition-colors shadow-sm "
-                      >Apply
-                      </a>
-                       <a 
+                        >
+                          Apply
+                        </a>
+                        <a
                           href={`mailto:${club.email}`}
                           className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                           title={`Contact ${club.name} Head`}
@@ -261,11 +263,13 @@ const ClubInfo = () => {
                     )}
 
                     {/* CASE 2: OPENING SOON */}
-                    {club.hiringStatus === 'Opening Soon' && (
-                      <div className="flex items-center justify-between">                     <span className=" rounded-lg">
-                        Applications Opening Soon
-                      </span>
-                      <a 
+                    {club.hiringStatus === "Opening Soon" && (
+                      <div className="flex items-center justify-between">
+                        {" "}
+                        <span className=" rounded-lg">
+                          Applications Opening Soon
+                        </span>
+                        <a
                           href={`mailto:${club.email}`}
                           className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                           title={`Contact ${club.name} Head`}
@@ -276,10 +280,10 @@ const ClubInfo = () => {
                     )}
 
                     {/* CASE 3: CLOSED (Show Email Icon) */}
-                    {club.hiringStatus === 'Closed' && (
+                    {club.hiringStatus === "Closed" && (
                       <div className="flex items-center justify-between">
                         <span className="">Applications closed</span>
-                        <a 
+                        <a
                           href={`mailto:${club.email}`}
                           className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                           title={`Contact ${club.name} Head`}
@@ -317,20 +321,19 @@ const ClubInfo = () => {
             </div>
           )}
         </div>
-       
       </main>
-       <div className="border-2 shadow-lg p-5 rounded-2xl max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 m-10">
-          <h1 className="text-[24px] font-semibold mb-5">Announcements</h1>
-          {
-            announcements.length>0 &&
-            announcements.map((a)=>(
-              <div key={a.id} className="p-4 rounded-lg mb-4  bg-white">
-                <h3 className="text-[20x]">From <span className="text-green-500">{a.name}</span></h3>
-                <p className="font-light">{a.description}</p>
-              </div>
-            ))
-          }
-        </div>
+      <div className="border-2 shadow-lg p-5 rounded-2xl max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 m-10">
+        <h1 className="text-[24px] font-semibold mb-5">Announcements</h1>
+        {announcements.length > 0 &&
+          announcements.map((a) => (
+            <div key={a.id} className="p-4 rounded-lg mb-4  bg-white">
+              <h3 className="text-[20x]">
+                From <span className="text-green-500">{a.name}</span>
+              </h3>
+              <p className="font-light">{a.description}</p>
+            </div>
+          ))}
+      </div>
     </div>
   );
 };

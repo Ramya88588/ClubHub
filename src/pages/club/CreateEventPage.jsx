@@ -8,11 +8,7 @@ import {
 import { useForm, useFieldArray } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
 import { getUserById, getClubById } from "@/firebase/collections";
 import { auth } from "@/firebase/firebase";
@@ -123,22 +119,22 @@ export default function CreateEventPage() {
 
     // Add validation check
     const requiredFields = [
-      'title',
-      'attendees',
-      'description',
-      'venue',
-      'college',
-      'area',
-      'startDate',
-      'startTime',
-      'endDate',
-      'endTime',
+      "title",
+      "attendees",
+      "description",
+      "venue",
+      "college",
+      "area",
+      "startDate",
+      "startTime",
+      "endDate",
+      "endTime",
     ];
 
     const missingFields = requiredFields.filter((field) => !formData[field]);
     if (missingFields.length > 0) {
       console.log("Missing fields:", missingFields);
-      alert(`Missing required fields: ${missingFields.join(', ')}`);
+      alert(`Missing required fields: ${missingFields.join(", ")}`);
       return;
     }
 
@@ -148,7 +144,10 @@ export default function CreateEventPage() {
     }
 
     try {
-      const startDateTime = buildDateTime(formData.startDate, formData.startTime);
+      const startDateTime = buildDateTime(
+        formData.startDate,
+        formData.startTime
+      );
       let endDateTime = buildDateTime(formData.endDate, formData.endTime);
 
       if (endDateTime <= startDateTime) {
@@ -253,7 +252,7 @@ export default function CreateEventPage() {
   return (
     <div className="bg-[#f8f9fa]">
       {/* Header */}
-      <div className="flex justify-between items-center bg-white p-4 border-b shadow-sm top-0 sticky">
+      <div className="flex justify-between items-center bg-white p-4 border-b z-40 shadow-sm top-0 sticky">
         <button type="button" className="" onClick={handleBack}>
           ← Back
         </button>
@@ -274,7 +273,7 @@ export default function CreateEventPage() {
             disabled={!isValid}
             className={`flex gap-2 px-4 py-2 rounded ${
               isValid
-                ? "bg-green-500 text-white"
+                ? "bg-green-500 text-white "
                 : "bg-gray-300 cursor-not-allowed"
             }`}
           >
@@ -289,7 +288,7 @@ export default function CreateEventPage() {
               console.log("Is valid?", isValid);
               console.log("Selected categories:", selectedCategories);
             }}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+            className="px-3 py-2 bg-blue-500 text-white rounded "
           >
             Debug
           </button>
@@ -326,7 +325,9 @@ export default function CreateEventPage() {
               }`}
             />
             {errors.title && (
-              <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.title.message}
+              </p>
             )}
 
             <label className="font-light text-[16px]">
@@ -347,7 +348,9 @@ export default function CreateEventPage() {
               }`}
             />
             {errors.attendees && (
-              <p className="text-red-500 text-sm mt-1">{errors.attendees.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.attendees.message}
+              </p>
             )}
 
             <label className="font-light text-[16px]">
@@ -399,7 +402,9 @@ export default function CreateEventPage() {
               )}
             </div>
             {errors.categories && (
-              <p className="text-red-500 text-sm mt-1">{errors.categories.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.categories.message}
+              </p>
             )}
             {selectedCategories.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
@@ -428,7 +433,9 @@ export default function CreateEventPage() {
               }`}
             />
             {errors.description && (
-              <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.description.message}
+              </p>
             )}
 
             {/* Highlights */}
@@ -481,7 +488,9 @@ export default function CreateEventPage() {
                 }`}
               />
               {errors.venue && (
-                <p className="text-red-500 text-sm mt-1">{errors.venue.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.venue.message}
+                </p>
               )}
 
               <label className="font-light text-[16px]">
@@ -495,7 +504,9 @@ export default function CreateEventPage() {
                 }`}
               />
               {errors.college && (
-                <p className="text-red-500 text-sm mt-1">{errors.college.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.college.message}
+                </p>
               )}
 
               <label className="font-light text-[16px]">
@@ -509,7 +520,9 @@ export default function CreateEventPage() {
                 }`}
               />
               {errors.area && (
-                <p className="text-red-500 text-sm mt-1">{errors.area.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.area.message}
+                </p>
               )}
             </div>
 
@@ -519,59 +532,77 @@ export default function CreateEventPage() {
                 <CalendarClock className="text-green-500"></CalendarClock>
                 <h3 className="font-semibold">Time</h3>
               </div>
-              
+
               <label className="font-light text-[16px]">
                 START TIME <span className="text-red-500">*</span>
               </label>
-              
+
               {/* START DATE - FIXED */}
               <input
                 type="date"
-                {...register("startDate", { required: "Start date is required" })}
+                {...register("startDate", {
+                  required: "Start date is required",
+                })}
                 className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.startDate ? "border-red-500 text-gray-900" : "text-gray-900"
+                  errors.startDate
+                    ? "border-red-500 text-gray-900"
+                    : "text-gray-900"
                 }`}
                 onChange={(e) => {
                   // Update the value in form state
-                  setValue("startDate", e.target.value, { shouldValidate: true });
+                  setValue("startDate", e.target.value, {
+                    shouldValidate: true,
+                  });
                   // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
               {errors.startDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.startDate.message}
+                </p>
               )}
 
               {/* START TIME - FIXED */}
               <input
                 type="time"
-                {...register("startTime", { required: "Start time is required" })}
+                {...register("startTime", {
+                  required: "Start time is required",
+                })}
                 className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.startTime ? "border-red-500 text-gray-900" : "text-gray-900"
+                  errors.startTime
+                    ? "border-red-500 text-gray-900"
+                    : "text-gray-900"
                 }`}
                 onChange={(e) => {
                   // Update the value in form state
-                  setValue("startTime", e.target.value, { shouldValidate: true });
+                  setValue("startTime", e.target.value, {
+                    shouldValidate: true,
+                  });
                   // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
               {errors.startTime && (
-                <p className="text-red-500 text-sm mt-1">{errors.startTime.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.startTime.message}
+                </p>
               )}
 
               <label className="font-light text-[16px]">
                 END TIME <span className="text-red-500">*</span>
               </label>
-              
+
               {/* END DATE - FIXED */}
               <input
                 type="date"
                 {...register("endDate", { required: "End date is required" })}
                 className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.endDate ? "border-red-500 text-gray-900" : "text-gray-900"
+                  errors.endDate
+                    ? "border-red-500 text-gray-900"
+                    : "text-gray-900"
                 }`}
                 onChange={(e) => {
                   // Update the value in form state
@@ -582,7 +613,9 @@ export default function CreateEventPage() {
                 }}
               />
               {errors.endDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.endDate.message}
+                </p>
               )}
 
               {/* END TIME - FIXED */}
@@ -590,7 +623,9 @@ export default function CreateEventPage() {
                 type="time"
                 {...register("endTime", { required: "End time is required" })}
                 className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.endTime ? "border-red-500 text-gray-900" : "text-gray-900"
+                  errors.endTime
+                    ? "border-red-500 text-gray-900"
+                    : "text-gray-900"
                 }`}
                 onChange={(e) => {
                   // Update the value in form state
@@ -601,28 +636,30 @@ export default function CreateEventPage() {
                 }}
               />
               {errors.endTime && (
-                <p className="text-red-500 text-sm mt-1">{errors.endTime.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.endTime.message}
+                </p>
               )}
             </div>
 
             {/* Upload */}
-            <div className="bg-white border rounded-lg p-5 text-center">
-              <div className="flex items-center gap-2">
-                <input
-                  type="file"
-                  {...register("coverImage")}
-                  id="coverImage"
-                  className="hidden"
-                />
-                <label
-                  htmlFor="coverImage"
-                  className="flex items-center justify-center gap-2 cursor-pointer"
-                >
+            <input
+              type="file"
+              {...register("coverImage")}
+              id="coverImage"
+              className="hidden"
+            />
+            <label
+              htmlFor="coverImage"
+              className="bg-white border rounded-lg p-5 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2">
                   <Plus className="text-green-500" size={40} />
                   <p className="text-gray-500">Upload Cover Image</p>
-                </label>
+                </div>
               </div>
-            </div>
+            </label>
           </div>
         </div>
 

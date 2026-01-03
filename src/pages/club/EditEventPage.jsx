@@ -1,17 +1,8 @@
-import {
-  Upload,
-  ClipboardEdit,
-  Building2,
-  CalendarClock,
-} from "lucide-react";
+import { Upload, ClipboardEdit, Building2, CalendarClock } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  doc,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
 import { getEventById, getUserById } from "@/firebase/collections";
 import { auth } from "@/firebase/firebase";
@@ -42,21 +33,23 @@ export default function EditEventPage() {
     control,
     reset,
     formState: { isValid },
-  } = useForm({ mode: "onChange" , shouldUnregister: false,
-      defaultValues: {
-    title: "",
-    description: "",
-    attendees: "",
-    venue: "",
-    college: "",
-    area: "",
-    startDate: "",
-    startTime: "",
-    endDate: "",
-    endTime: "",
-    highlights: [""],
-    feedbackFormLink: "",
-  },
+  } = useForm({
+    mode: "onChange",
+    shouldUnregister: false,
+    defaultValues: {
+      title: "",
+      description: "",
+      attendees: "",
+      venue: "",
+      college: "",
+      area: "",
+      startDate: "",
+      startTime: "",
+      endDate: "",
+      endTime: "",
+      highlights: [""],
+      feedbackFormLink: "",
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -88,29 +81,29 @@ export default function EditEventPage() {
           navigate(-1);
           return;
         }
-        reset({
-          title: event.title,
-          description: event.description,
-          attendees: event.attendees,
-          venue: event.location.venue,
-          college: event.location.college,
-          area: event.location.area,
+        reset(
+          {
+            title: event.title,
+            description: event.description,
+            attendees: event.attendees,
+            venue: event.location.venue,
+            college: event.location.college,
+            area: event.location.area,
 
-          startDate: toDateInput(event.startDateTime),
-          startTime: toTimeInput(event.startDateTime),
+            startDate: toDateInput(event.startDateTime),
+            startTime: toTimeInput(event.startDateTime),
 
-          endDate: toDateInput(event.endDateTime),
-          endTime: toTimeInput(event.endDateTime),
+            endDate: toDateInput(event.endDateTime),
+            endTime: toTimeInput(event.endDateTime),
 
-          highlights: event.highlights?.length ? event.highlights : [""],
-          feedbackFormLink: event.feedbackFormLink || "",
-        },
-        {
-          keepDirty: false,
-          keepTouched: false,
-        }
-      );
-
+            highlights: event.highlights?.length ? event.highlights : [""],
+            feedbackFormLink: event.feedbackFormLink || "",
+          },
+          {
+            keepDirty: false,
+            keepTouched: false,
+          }
+        );
 
         setLoading(false);
       } catch (err) {
@@ -170,9 +163,9 @@ export default function EditEventPage() {
           type="submit"
           form="edit-event-form"
           disabled={!isValid}
-          className={`px-4 py-2 rounded ${
+          className={`flex px-4 py-2 items-center gap-2 rounded ${
             isValid
-              ? "bg-green-500 text-white"
+              ? "bg-green-500 text-white cursor-pointer"
               : "bg-gray-300 cursor-not-allowed"
           }`}
         >
@@ -241,17 +234,45 @@ export default function EditEventPage() {
 
           {/* Location */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input {...register("venue")} placeholder="Venue" className="border p-2 rounded" />
-            <input {...register("college")} placeholder="College" className="border p-2 rounded" />
-            <input {...register("area")} placeholder="Area" className="border p-2 rounded" />
+            <input
+              {...register("venue")}
+              placeholder="Venue"
+              className="border p-2 rounded"
+            />
+            <input
+              {...register("college")}
+              placeholder="College"
+              className="border p-2 rounded"
+            />
+            <input
+              {...register("area")}
+              placeholder="Area"
+              className="border p-2 rounded"
+            />
           </div>
 
           {/* Time */}
           <div className="grid grid-cols-2 gap-4">
-            <input type="date" {...register("startDate")} className="border p-2 rounded" />
-            <input type="time" {...register("startTime")} className="border p-2 rounded" />
-            <input type="date" {...register("endDate")} className="border p-2 rounded" />
-            <input type="time" {...register("endTime")} className="border p-2 rounded" />
+            <input
+              type="date"
+              {...register("startDate")}
+              className="border p-2 rounded"
+            />
+            <input
+              type="time"
+              {...register("startTime")}
+              className="border p-2 rounded"
+            />
+            <input
+              type="date"
+              {...register("endDate")}
+              className="border p-2 rounded"
+            />
+            <input
+              type="time"
+              {...register("endTime")}
+              className="border p-2 rounded"
+            />
           </div>
 
           <input
@@ -264,4 +285,3 @@ export default function EditEventPage() {
     </div>
   );
 }
-
