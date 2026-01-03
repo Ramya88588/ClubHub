@@ -129,7 +129,7 @@ const ProfileInfo = () => {
 
         <div className="flex gap-5">
           {/* Avatar */}
-          <div className="relative p-2 shrink-0">
+          <div className="relative w-44 h-44 shrink-0">
             <img
               src={formData.avatar}
               alt="avatar"
@@ -146,7 +146,7 @@ const ProfileInfo = () => {
                   accept="image/*"
                 />
                 <span
-                  className="material-symbols-outlined p-2 bg-blue-100 text-blue-500 rounded-full absolute bottom-4 right-4 cursor-pointer"
+                  className="material-symbols-outlined p-2 bg-blue-600 text-white rounded-full absolute bottom-1 right-1 cursor-pointer shadow hover:bg-blue-500"
                   onClick={() => fileInputRef.current.click()}
                 >
                   photo_camera
