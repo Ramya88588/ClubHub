@@ -13,7 +13,7 @@ const getThemeClasses = (theme) => {
   return variants[theme] || variants.blue;
 };
 
-const EventCard = ({title, description, date, type, theme, variant = 'feedback' ,image,showAnalytics = false,path, onClick,}) => {
+const EventCard = ({title, description, date, type, theme, variant = 'defualt' ,image,showAnalytics = false,path, onClick,}) => {
   const colors = getThemeClasses(theme);
    const navigate=useNavigate();
 

@@ -126,15 +126,35 @@ const StudentDashboard = () => {
         className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {pastEvents.map((event) => (
-         <EventCard 
-            key={event.id}
-           
-            {...event}
-            path={`/student/events/${event.id}`}
+        {pastEvents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center w-full py-12 border border-dashed rounded-xl bg-gray-50">
+            <span className="material-symbols-outlined text-gray-400 text-5xl mb-3">
+              event_busy
+            </span>
+            <p className="text-gray-600 font-medium">
+              You haven’t attended any events yet
+            </p>
+            <p className="text-sm text-gray-400 mt-1">
+              Attend events to unlock feedback.
+            </p>
+          </div>
+        ) : (
+          <div
+            ref={scrollContainerRef}
+            className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {pastEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                variant="feedback"
+                {...event}
+                path={`/student/events/${event.id}`}
+              />
+            ))}
+          </div>
+        )}
 
-          />
-        ))}
       </div>
 
       <div className="flex justify-center gap-2 mt-2">
