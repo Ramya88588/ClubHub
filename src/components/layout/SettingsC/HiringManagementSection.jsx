@@ -1,92 +1,90 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { auth } from "@/firebase/firebase";
-import { updateClubHiring } from "@/firebase/collections";
+import { updateClubHiring, getClubById } from "@/firebase/collections";
 
-const HiringManagementSection = ({ club }) => {
+const HiringManagementSection = () => {
   const [hiringOpen, setHiringOpen] = useState(false);
-  const [gForm, setGForm] = useState("");
+  const [formLink, setFormLink] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
-  /* 🔹 Sync Firestore → UI */
+  const clubId = auth.currentUser?.uid;
+
   useEffect(() => {
-    if (!club) return;
-    setHiringOpen(!!club.hiringOpen);
-    setGForm(club.gFormLink || "");
-  }, [club]);
+    const fetchHiring = async () => {
+      if (!clubId) return;
 
-  /* 🔹 Toggle hiring */
-  const toggleHiring = async () => {
-    const user = auth.currentUser;
-    if (!user) return;
+      const club = await getClubById(clubId);
+      if (club) {
+        setHiringOpen(club.hiringOpen || false);
+        setFormLink(club.gformLink || "");
+      }
+      setLoading(false);
+    };
 
-    const updated = !hiringOpen;
-    setHiringOpen(updated);
+    fetchHiring();
+  }, [clubId]);
 
-    await updateClubHiring(user.uid, {
-      hiringOpen: updated,
-    });
-  };
-
-  /* 🔹 Update Google Form link */
-  const handleGFormChange = async (e) => {
-    const value = e.target.value;
-    setGForm(value);
-
-    const user = auth.currentUser;
-    if (!user) return;
-
-    await updateClubHiring(user.uid, {
-      gFormLink: value,
-    });
-  };
-
-  if (!club) return null;
+  if (loading) return null;
 
   return (
-    <div className="mt-10">
-      <div className="flex items-center gap-2 mb-2">
-        <span
-          className="material-symbols-outlined text-green-500"
-          style={{ fontSize: "34px" }}
+    <div className="bg-white border rounded-xl p-6 space-y-4">
+      {/* Header + Edit/Save */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Hiring</h2>
+
+        <button
+          onClick={async () => {
+            if (isEditing) {
+              // SAVE to Firestore
+              await updateClubHiring(clubId, {
+                hiringOpen,
+                gformLink: formLink,
+              });
+              alert("Hiring settings updated");
+            }
+            setIsEditing(!isEditing);
+          }}
+          className="text-sm font-medium text-blue-600 hover:text-blue-500"
         >
-          person_add
-        </span>
-        <h2 className="text-[24px]">Hiring Management</h2>
+          {isEditing ? "Save" : "Edit"}
+        </button>
       </div>
 
-      <div className="bg-white p-5 rounded-md border">
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="font-medium">Hiring Status</p>
-            <p className="text-sm text-gray-500 mt-2">
-              Add your respondent's Google Form link here
-            </p>
-          </div>
+      {/* Toggle */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-gray-700">Hiring Status</span>
 
-          {/* Toggle */}
-          <button
-            onClick={toggleHiring}
-            className={`w-12 h-6 rounded-full flex items-center px-1
-              ${hiringOpen ? "bg-green-500" : "bg-gray-300"}
-            `}
-          >
-            <div
-              className={`w-4 h-4 bg-white rounded-full transition-transform
-                ${hiringOpen ? "translate-x-6" : "translate-x-0"}
-              `}
-            />
-          </button>
-        </div>
-
-        {/* Google Form */}
-        <input
-          type="text"
-          className={`w-full border rounded-sm mt-4 p-2 outline-none placeholder:font-light
-            ${!hiringOpen ? "cursor-not-allowed bg-gray-100" : ""}
+        <button
+          disabled={!isEditing}
+          onClick={() => setHiringOpen(!hiringOpen)}
+          className={`w-12 h-6 flex items-center rounded-full p-1 transition
+            ${hiringOpen ? "bg-green-500" : "bg-gray-300"}
+            ${!isEditing ? "opacity-50 cursor-not-allowed" : ""}
           `}
-          placeholder="https://docs.google.com/forms/..."
-          value={gForm}
-          onChange={handleGFormChange}
-          disabled={!hiringOpen}
+        >
+          <div
+            className={`bg-white w-4 h-4 rounded-full shadow transform transition ${
+              hiringOpen ? "translate-x-6" : ""
+            }`}
+          />
+        </button>
+      </div>
+
+      {/* Form Link */}
+      <div>
+        <label className="text-sm text-gray-600">
+          Google Form Link
+        </label>
+        <input
+          type="url"
+          value={formLink}
+          disabled={!isEditing}
+          onChange={(e) => setFormLink(e.target.value)}
+          placeholder="https://forms.gle/..."
+          className={`mt-1 w-full border rounded-lg px-3 py-2 text-sm
+            ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""}
+          `}
         />
       </div>
     </div>
