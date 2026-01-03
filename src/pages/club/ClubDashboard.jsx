@@ -237,9 +237,9 @@ const ClubDashboard = () => {
           pastEvents.map((event) => (
             <EventCard
               key={event.id}
+              id ={event.id}
               {...event}
               showAnalytics
-              onClick={() => navigate(`/club/events/${event.id}/analytics`)}
             />
           ))
         )}

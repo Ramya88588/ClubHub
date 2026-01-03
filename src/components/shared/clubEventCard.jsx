@@ -31,6 +31,7 @@ const ClubEventCard = ({
 
   return (
     <div
+      onClick={() => navigate(`/club/events/${id}`)}
       className="
         min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:scale-[1.01] hover:shadow-xl hover:-translate-y-1  duration-300 group 
       "
@@ -79,7 +80,7 @@ const ClubEventCard = ({
       </div>
 
       {/* Footer (always at bottom) */}
-      <div className="px-4 py-3 border-t flex justify-between items-center gap-2">
+      <div className="px-4 py-3 border-t flex justify-between items-center gap-2"  onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2">
           {/* Edit button */}
           <Link to={`/club/edit-event/${id}`}>

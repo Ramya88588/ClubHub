@@ -15,6 +15,7 @@ const FALLBACK_IMAGE =
 
 const EventDetailsPage = () => {
   const { id } = useParams();
+  console.log("EVENT ID FROM ROUTE:", id);
   const navigate = useNavigate();
 
   const [event, setEvent] = useState(null);

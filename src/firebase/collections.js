@@ -348,9 +348,15 @@ export const getEventById = async (eventId) => {
   try {
     const ref = doc(db, "events", eventId);
     const snap = await getDoc(ref);
-
+    const data = snap.data();
     if (snap.exists()) {
-      return { id: snap.id, ...snap.data() };
+      return {
+        id: snap.id,
+        ...data,
+        registeredUsers: Array.isArray(data.registeredUsers)
+          ? data.registeredUsers
+          : [], // ✅ GUARANTEE ARRAY
+      };  
     }
 
     return null;

@@ -13,15 +13,12 @@ const getThemeClasses = (theme) => {
   return variants[theme] || variants.blue;
 };
 
-const EventCard = ({title, description, date, type, theme, variant = 'defualt' ,image,showAnalytics = false,path, onClick,}) => {
+const EventCard = ({id,title, description, date, type, theme, variant = 'defualt' ,image,showAnalytics = false,path, onClick,}) => {
   const colors = getThemeClasses(theme);
    const navigate=useNavigate();
 
   return (
-    <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:scale-[1.01] hover:shadow-xl hover:-translate-y-1  duration-300 group "   onClick={() => {
-        if (onClick) onClick();   // 👈 optional extra work
-        if (path) navigate(path); // 👈 your existing navigation
-      }}
+    <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:scale-[1.01] hover:shadow-xl hover:-translate-y-1  duration-300 group "
     >
       
       {/* Image Area */}
@@ -57,7 +54,8 @@ const EventCard = ({title, description, date, type, theme, variant = 'defualt' ,
        
         {showAnalytics ? (
     // ✅ Analytics Button (Past Events)
-   <button className={`px-4 py-2 rounded-lg text-sm text-white transition-colors 
+   <button  onClick={() => {navigate(`/club/events/${id}/analytics`)}} className={`px-4 py-2 rounded-lg text-sm text-white transition-colors 
+      
         ${theme === "yellow"
           ? "bg-yellow-400 hover:bg-yellow-500"
           : theme === "red"
@@ -88,7 +86,23 @@ const EventCard = ({title, description, date, type, theme, variant = 'defualt' ,
         </svg>
       </button>
     )
+    
   )}
+        <button onClick={() => navigate(`/club/events/${id}`)} className="p-2 rounded-full hover:bg-blue-50 transition">
+          <svg
+            className="w-5 h-5 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
       </div>
     </div>
   );
