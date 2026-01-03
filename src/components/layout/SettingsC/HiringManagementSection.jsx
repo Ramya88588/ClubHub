@@ -36,6 +36,10 @@ const HiringManagementSection = () => {
         <button
           onClick={async () => {
             if (isEditing) {
+              if (hiringOpen && !formLink.trim()) {
+                alert("Cannot enable hiring without a Google Form link.");
+                return;
+              }              
               // SAVE to Firestore
               await updateClubHiring(clubId, {
                 hiringOpen,
@@ -57,10 +61,20 @@ const HiringManagementSection = () => {
 
         <button
           disabled={!isEditing}
-          onClick={() => setHiringOpen(!hiringOpen)}
+          onClick={() => {
+            if (!isEditing) return;
+
+            if (!formLink.trim()) {
+              alert("Please add a Google Form link before enabling hiring.");
+              return;
+            }
+
+            setHiringOpen(!hiringOpen);
+          }}
+
           className={`w-12 h-6 flex items-center rounded-full p-1 transition
             ${hiringOpen ? "bg-green-500" : "bg-gray-300"}
-            ${!isEditing ? "opacity-50 cursor-not-allowed" : ""}
+            ${(!isEditing || !formLink.trim()) ? "opacity-50 cursor-not-allowed" : ""}
           `}
         >
           <div
