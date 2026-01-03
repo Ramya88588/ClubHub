@@ -17,7 +17,7 @@ const HiringManagementSection = () => {
       const club = await getClubById(clubId);
       if (club) {
         setHiringOpen(club.hiringOpen || false);
-        setFormLink(club.gformLink || "");
+        setFormLink(club.gFormLink || "");
       }
       setLoading(false);
     };
@@ -43,7 +43,7 @@ const HiringManagementSection = () => {
               // SAVE to Firestore
               await updateClubHiring(clubId, {
                 hiringOpen,
-                gformLink: formLink,
+                gFormLink: formLink,
               });
               alert("Hiring settings updated");
             }
