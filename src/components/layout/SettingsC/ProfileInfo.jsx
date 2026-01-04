@@ -99,11 +99,11 @@ const ProfileInfo = () => {
         </span>
         <h2 className="text-[24px]"> Profile Info</h2>
       </div>
-      <div className="bg-white p-5 rounded-md border flex flex-col">
+      <div className="bg-white p-10 rounded-md border flex flex-col">
         <div className="self-end">
           {!isEditing ? (
             <button
-              className="border px-4 py-2 rounded-sm flex gap-2 items-center"
+              className="border px-4 py-2 rounded-sm flex gap-2 text-green-600 text-sm cursor-pointer items-center"
               onClick={() => setIsEditing(true)}
             >
               <span className="material-symbols-outlined">edit</span>
@@ -111,7 +111,7 @@ const ProfileInfo = () => {
             </button>
           ) : (
             <button
-              className="border px-4 py-2 rounded-sm flex gap-2 items-center"
+              className="border px-4 py-2 rounded-sm flex gap-2 text-blue-600 text-sm cursor-pointer items-center"
               onClick={handleSave}
             >
               <span className="material-symbols-outlined">save</span>

@@ -41,7 +41,7 @@ const FooterPage = () => {
             Empowering student communities to connect, grow, and lead together
           </p>
         </div>
-        <div className="flex flex-row gap-50 w-xl justify-center">
+        <div className="flex flex-row gap-30 md:gap-50 w-md md:w-xl justify-center">
           <div className="text-center md:text-left">
             <h4 className="text-lg font-medium text-gray-900 mb-4">Platform</h4>
             <ul className="space-y-3 text-sm text-gray-600">

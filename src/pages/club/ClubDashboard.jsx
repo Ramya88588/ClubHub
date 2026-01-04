@@ -15,6 +15,7 @@ import {
 } from "@/firebase/collections";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
+import Loader from "@/components/shared/Loader";
 
 // data/mockEvents.js
 // data/pastEvents.js
@@ -130,66 +131,77 @@ const ClubDashboard = () => {
 
     return () => unsubscribe();
   }, []);
+
   if (loading) {
-    return <div className="p-10">Loading dashboard...</div>;
+    return (
+      <Loader
+        message="Loading your dashboard…"
+        subMessage="Fetching events and club data"
+        variant="skeleton"
+      />
+    );
   }
 
   return (
-    <div className="overflow-y-scroll no-scrollbar h-screen">
+    <div className="overflow-y-scroll  no-scrollbar h-screen">
       <Navbar />
-      <div className="mt-15 bg-[#f8f9fa] p-15">
-        <div className="">
-          <p className="font-semibold text-[32px]">
-            <span className="text-green-500 font-semibold text-[32px]">
-              {club?.clubName || "Club"}
-            </span>
-            Dashboard
-          </p>
-          <p>Manage your events and check your club performance</p>
-        </div>
-        <div className="flex md:flex-row flex-col gap-4 justify-center mt-10">
-          <div className="one  border-2 border-[#d9d9d9] rounded-md p-10 md:w-[35%] w-full bg-white">
-            <p className="font-medium text-[24px]">Club Info</p>
-            <div className="font-light text-md p-3">
-              {!club ? (
-                <p className="text-gray-400 text-md">Loading club info...</p>
-              ) : (
-                <>
-                  <p>Name: {club.clubName}</p>
-                  <p>President: {club.presidentName}</p>
-                  <p>Members: {club.membersCount ?? 0}</p>
-                </>
-              )}
+      <div className="bg-[#f8f9fa] px-8 py-10 mt-15">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* TOP ROW: TITLE + PRIMARY ACTION */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <h1 className="text-3xl font-semibold text-gray-900">
+                <span className="text-green-500">
+                  {club?.clubName || "Club"}
+                </span>{" "}
+                Dashboard
+              </h1>
+              <p className="text-gray-500 mt-1">
+                Manage events, members, and announcements for your club
+              </p>
             </div>
-          </div>
-          <Link to="/club/create-event" className="md:w-[20%] w-full">
-            <div className="two border border-[#d9d9d9] shadow-sm rounded-md p-15 w-full bg-white flex flex-col items-center">
-              <Plus className="text-green-500 h-20 w-20" />
-              <span className="font-light text-lg">Create New Event</span>
-            </div>
-          </Link>
-          <div className="three border-2 border-[#d9d9d9] shadow-sm rounded-md md:w-[30%] w-full md:py-0 py-10 px-10 justify-center bg-white flex flex-col text-lg font-light">
-            <div className="flex items-center gap-5 pb-5 border-b">
-              {" "}
-              <BarChart3 className="w-8 text-yellow-500" />
-              View Analytics
-            </div>
-            <div className="flex items-center py-5 gap-2 border-b">
-              <Users className="w-8 text-blue-500" />
-              Manage Members
-            </div>
-            <div
-              className="flex items-center pt-5 gap-2 cursor-pointer"
-              onClick={() => {
-                navigate("/club/announcements");
-              }}
+
+            {/* PRIMARY CTA */}
+            <Link
+              to="/club/create-event"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white border-gray-300 border-2 text-black rounded-lg font-medium hover:border-green-500 transition w-fit"
             >
-              <Send className="w-8  text-red-500" />
-              Send Announcement
+              <Plus size={30} className="text-green-500"></Plus>
+              Create Event
+            </Link>
+          </div>
+
+          {/* QUICK ACTIONS */}
+          <div className="bg-white border rounded-md p-6">
+            <div className="flex flex-col md:flex-row gap-6 justify-around">
+              <button
+                onClick={() => navigate("/club/analytics")}
+                className="flex items-center gap-3 text-gray-700 hover:text-yellow-600 cursor-pointer transition"
+              >
+                <BarChart3 className="w-6 h-6" />
+                <span className="font-medium">View Analytics</span>
+              </button>
+
+              <button
+                onClick={() => navigate("/club/members")}
+                className="flex items-center gap-3 text-gray-700 hover:text-blue-600 cursor-pointer transition"
+              >
+                <Users className="w-6 h-6" />
+                <span className="font-medium">Manage Members</span>
+              </button>
+
+              <button
+                onClick={() => navigate("/club/announcements")}
+                className="flex items-center gap-3 text-gray-700 hover:text-red-600 cursor-pointer transition"
+              >
+                <Send className="w-6 h-6" />
+                <span className="font-medium">Send Announcement</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
       <div className="two flex justify-evenly py-8 bg-white">
         <div className="uP text-blue-500 flex flex-col items-center">
           <p className="text-[36px]">{upcomingEvents.length}</p>
@@ -239,16 +251,16 @@ const ClubDashboard = () => {
           )}
         </div>
       </div>
-      <div className="flex p-25 bg-[#f8f9fa] justify-between">
-        <div>
-          <p className="text-xl">Is your club hiring members?</p>
+      <div className="flex flex-col lg:flex-row p-25 bg-[#f8f9fa] gap-5 justify-between">
+        <div className="text-center lg:text-left">
+          <p className="text-xl ">Is your club hiring members?</p>
           <p className="text-md font-light">
             Yes? Then post your status in the clubs page to find new talented
             members
           </p>
         </div>
         <div
-          className="bg-yellow-500 text-white rounded-lg h-fit flex items-center px-10 py-2 cursor-pointer"
+          className="bg-yellow-500 text-white rounded-lg h-fit flex items-center justify-center px-10 py-2 cursor-pointer"
           onClick={() => navigate("/club/settings")}
         >
           <p>Update your club status</p>

@@ -27,12 +27,17 @@ const HiringManagementSection = () => {
 
   return (
     <div className="mt-10">
-        <div className="flex items-center gap-2 mb-2">
-      <span class="material-symbols-outlined text-green-500" style={{ fontSize: "34px" }}>person_add</span>
-      <h2 className="text-[24px]">Hiring Management</h2>
+      <div className="flex items-center gap-2 mb-2">
+        <span
+          class="material-symbols-outlined text-green-500"
+          style={{ fontSize: "34px" }}
+        >
+          person_add
+        </span>
+        <h2 className="text-[24px]">Hiring Management</h2>
       </div>
 
-      <div className=" bg-white p-5 rounded-md border">
+      <div className=" bg-white p-10 rounded-md border">
         <div className="flex justify-between items-center">
           <div>
             <p className="font-medium">Hiring Status</p>
@@ -55,10 +60,13 @@ const HiringManagementSection = () => {
         </div>
         <input
           type="text"
-          className={`w-full border rounded-sm mt-2 p-2 outline-none placeholder:font-light ${clubs[0].hiringOpen ? "": "cursor-not-allowed"}`}
+          className={`w-full border rounded-sm mt-2 p-2 outline-none placeholder:font-light ${
+            clubs[0].hiringOpen ? "" : "cursor-not-allowed"
+          }`}
           placeholder="Eg. https://docs.google.com/forms/d/e/1FAIpQLSeHlf5KU6LjV7_slPfUlz_8951ott_XIYX82CJuj-6b3npq0w/viewform?usp=header"
           onChange={handleGform}
-          value={gForm}  disabled={!clubs[0].hiringOpen}
+          value={gForm}
+          disabled={!clubs[0].hiringOpen}
         />
       </div>
     </div>

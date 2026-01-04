@@ -1,7 +1,5 @@
-
 import { useState } from "react";
 import { clubs } from "./ProfileInfo";
-
 
 const ALL_preferences = [
   "Web Development",
@@ -28,7 +26,6 @@ const PreferencesSection = () => {
     clubs[0].preferences
   );
 
-
   const [isEditing, setIsEditing] = useState(false);
 
   // toggle interest
@@ -43,16 +40,15 @@ const PreferencesSection = () => {
   };
 
   // save to backend
-const handleSave = () => {
-  clubs[0] = {
-    ...clubs[0],
-    preferences: selectedPreferences,
+  const handleSave = () => {
+    clubs[0] = {
+      ...clubs[0],
+      preferences: selectedPreferences,
+    };
+
+    setIsEditing(false);
+    console.log("Backend updated:", clubs);
   };
-
-  setIsEditing(false);
-  console.log("Backend updated:", clubs);
-};
-
 
   return (
     <div className=" space-y-4">
@@ -72,31 +68,36 @@ const handleSave = () => {
         </svg>
         <h2 className="text-[26px]">Preferences</h2>
       </div>
-      <div className="bg-white p-5 rounded-md border flex flex-col gap-3">
+      <div className="bg-white p-10 rounded-md border flex flex-col gap-3">
         <div className="flex justify-between items-center">
-        <div>
-          <p className="text-[20px] font-light">Help students find your club easily by adding your focus areas</p>
-        </div>
-        <div className="">
-          {!isEditing ? (
-          <div className="border px-4 py-2 rounded-sm flex  gap-2 items-center ">
-            <span className="material-symbols-outlined">edit</span>
-          <button
-            className="text-blue-600 text-sm"
-            onClick={() => setIsEditing(true)}
-          >
-            Edit
-          </button>
+          <div>
+            <p className="text-[20px] font-light">
+              Help students find your club easily by adding your focus areas
+            </p>
           </div>
-        ) : (
-           <div className="border px-4 py-2 rounded-sm flex  gap-2 items-center">
-            <span className="material-symbols-outlined">save</span>
-          <button className="text-green-600 text-sm" onClick={handleSave}>
-            Save
-          </button>
+          <div className="">
+            {!isEditing ? (
+              <button
+                className="text-green-600 text-sm cursor-pointer"
+                onClick={() => setIsEditing(true)}
+              >
+                <div className="border px-4 py-2 rounded-sm flex  gap-2 items-center ">
+                  <span className="material-symbols-outlined">edit</span>
+                  Edit
+                </div>
+              </button>
+            ) : (
+              <button
+                className="text-blue-600 text-sm cursor-pointer"
+                onClick={handleSave}
+              >
+                <div className="border px-4 py-2 rounded-sm flex  gap-2 items-center">
+                  <span className="material-symbols-outlined">save</span>
+                  Save
+                </div>
+              </button>
+            )}
           </div>
-        )}
-        </div>
         </div>
         <div className="flex flex-wrap gap-2 mt-2">
           {ALL_preferences.map((preference) => {
@@ -121,8 +122,6 @@ const handleSave = () => {
             );
           })}
         </div>
-
-
       </div>
     </div>
   );

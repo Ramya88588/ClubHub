@@ -6,6 +6,7 @@ import DangerZoneSection from "@/components/layout/Settings/DangerZoneSection";
 import { useEffect, useState, useCallback } from "react";
 import { auth } from "@/firebase/firebase";
 import { getStudentById, updateStudent } from "@/firebase/collections";
+import Loader from "@/components/shared/Loader";
 
 const SettingsPage = () => {
   const [student, setStudent] = useState(null);
@@ -56,7 +57,7 @@ const SettingsPage = () => {
   };
 
   if (loading) {
-    return <div className="p-6">Loading settings...</div>;
+    return <Loader message="Loading settings.." />;
   }
 
   return (

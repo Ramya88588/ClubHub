@@ -3,6 +3,7 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import { auth } from "@/firebase/firebase";
 import { useEffect, useState } from "react";
 import { getUserById } from "@/firebase/collections";
+import Loader from "@/components/shared/Loader";
 
 const AdminRoutes = () => {
   const [allowed, setAllowed] = useState(null);
@@ -25,7 +26,7 @@ const AdminRoutes = () => {
   }, []);
 
   if (allowed === null) {
-    return <p className="p-10">Checking permissions...</p>;
+    return <Loader message="Checking Permissions..." />;
   }
 
   if (!allowed) {

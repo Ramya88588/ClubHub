@@ -27,7 +27,7 @@ const EventCard = ({
 
   return (
     <div
-      className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:shadow-xl hover:-translate-y-1  duration-300 group "
+      className="min-w-70 w-90 md:w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:shadow-xl hover:-translate-y-1  duration-300 group "
       onClick={() => navigate(path)}
     >
       {/* Image Area */}

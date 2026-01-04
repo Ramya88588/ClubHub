@@ -19,8 +19,8 @@ const DraftEventsPage = () => {
             </p>
           </div>
           <Link to="/club/create-event">
-            <div className="border shadow-sm flex items-center gap-4 py-4 rounded-md px-10 bg-white">
-              <Plus size={40} className="text-green-500"></Plus>
+            <div className="border shadow-sm flex items-center gap-4 py-4 rounded-md px-10 hover:border-yellow-400 bg-white">
+              <Plus size={30} className="text-yellow-500"></Plus>
               <p>Create New Event</p>
             </div>
           </Link>

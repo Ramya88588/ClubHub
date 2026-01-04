@@ -127,9 +127,9 @@ const UpcomingEventsSection = () => {
   };
 
   return (
-    <div className="mt-18  mx-auto p-16 bg-[#f8f9fa]">
+    <div className="mt-16 mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-[#f8f9fa]">
       {/* HEADER SECTION */}
-      <div className="max-w-6xl flex flex-col mx-auto md:flex-row md:items-end justify-between mb-8 gap-4">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
         <div>
           <h1 className="text-[32px] font-bold text-gray-900">Welcome back</h1>
           <p className="text-gray-500 mt-1">
@@ -176,14 +176,14 @@ const UpcomingEventsSection = () => {
           </h2>
 
           {/* Filter Controls Group */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto items-center">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full xl:w-auto">
             {/* 1. Date Picker */}
             <div className="relative w-full sm:w-auto">
               <input
                 type="date"
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="w-full sm:w-auto px-4 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
+                className="w-full sm:w-auto px-4 py-2 cursor-text bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
               />
               {/* <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs">
                 <svg
@@ -268,7 +268,7 @@ const UpcomingEventsSection = () => {
             {(dateFilter || typeFilter || clubFilter) && (
               <button
                 onClick={clearFilters}
-                className="text-sm text-gray-500 hover:text-gray-800 font-medium underline decoration-gray-300 underline-offset-4 transition-colors"
+                className="text-sm text-gray-500 hover:text-gray-800 font-medium underline decoration-gray-300 underline-offset-4 cursor-pointer transition-colors"
               >
                 Clear all
               </button>
@@ -278,12 +278,12 @@ const UpcomingEventsSection = () => {
 
         {/* THE GRID */}
         {currentEvents.length > 0 ? (
-          <div className="flex flex-wrap gap-12 mb-12 px-4">
+          <div className="flex flex-wrap justify-center gap-8 mb-12 px-4">
             {currentEvents.map((event) => (
               <div
                 key={event.id}
                 onClick={() => navigate(`/student/events/${event.id}`)} // 4. Navigation Handler
-                className="cursor-pointer transition-transform hover:scale-[1.01] duration-200"
+                className="cursor-pointer transition-transform hover:scale-[1.01]duration-200"
               >
                 <EventCard {...event} variant="details" />
               </div>
@@ -312,7 +312,7 @@ const UpcomingEventsSection = () => {
             </p>
             <button
               onClick={clearFilters}
-              className="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium"
+              className="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer"
             >
               Clear all filters
             </button>
@@ -321,11 +321,11 @@ const UpcomingEventsSection = () => {
 
         {/* DYNAMIC PAGINATION */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 select-none border-t border-gray-100 pt-8">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-sm font-medium text-gray-500 select-none border-t border-gray-100 pt-6">
             <button
               onClick={() => setCurrentPage(1)}
               disabled={currentPage === 1}
-              className="px-3 py-1 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-500 transition-colors"
+              className="px-3 py-1 hidden sm:block hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-500 transition-colors"
             >
               First
             </button>
@@ -363,7 +363,7 @@ const UpcomingEventsSection = () => {
             <button
               onClick={() => setCurrentPage(totalPages)}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-500 transition-colors"
+              className="px-3 py-1 hidden sm:block hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-500 transition-colors"
             >
               Last
             </button>

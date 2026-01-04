@@ -8,6 +8,7 @@ import {
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
 import { getStudentById } from "@/firebase/collections";
+import Loader from "@/components/shared/Loader";
 
 const StudentDashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -15,7 +16,9 @@ const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState(null);
 
-  const scrollContainerRef = useRef(null);
+  const registeredScrollRef = useRef(null);
+  const pastScrollRef = useRef(null);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -43,17 +46,24 @@ const StudentDashboard = () => {
     console.log("CURRENT USER UID:", auth.currentUser?.uid);
   }, []);
 
-  const scroll = (direction) => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 320; // Card width + gap
-      scrollContainerRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
+  const scroll = (ref, direction) => {
+    if (!ref.current) return;
+
+    const scrollAmount = 320;
+    ref.current.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
   };
+
   if (loading) {
-    return <p className="p-10">Loading your events...</p>;
+    return (
+      <Loader
+        message="Loading your dashboard…"
+        subMessage="Fetching your events"
+        variant="skeleton"
+      />
+    );
   }
 
   return (
@@ -85,20 +95,74 @@ const StudentDashboard = () => {
       </div>
       <div className="p-6">
         <section className="max-w-7xl mx-auto px-6 py-5">
-          <div className="flex items-center justify-between mb-6 bg-white-500">
+          <div className="flex items-center justify-between mb-6">
             <h2 className="text-[24px] font-bold text-gray-900 tracking-wide">
               REGISTERED EVENTS
             </h2>
+
+            {/* Navigation Arrows */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => scroll(registeredScrollRef, "left")}
+                className="p-2 rounded-full hover:bg-white cursor-pointer text-gray-400 hover:text-gray-800 transition-colors"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => scroll(registeredScrollRef, "right")}
+                className="p-2 rounded-full hover:bg-white cursor-pointer text-gray-800 transition-colors"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-6 ">
+
+          {/* Scroll Container */}
+          <div
+            ref={registeredScrollRef}
+            className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
             {upcomingEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                variant="details"
-                {...event}
-                path={`/student/events/${event.id}`}
-              />
+              <div key={event.id} className="snap-start shrink-0">
+                <EventCard
+                  variant="details"
+                  {...event}
+                  path={`/student/events/${event.id}`}
+                />
+              </div>
             ))}
+          </div>
+
+          {/* Dots (optional, visual consistency) */}
+          <div className="flex justify-center gap-2 mt-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
           </div>
         </section>
       </div>
@@ -115,8 +179,8 @@ const StudentDashboard = () => {
             {/* Navigation Arrows */}
             <div className="flex gap-2">
               <button
-                onClick={() => scroll("left")}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-800 transition-colors"
+                onClick={() => scroll(pastScrollRef, "left")}
+                className="p-2 rounded-full hover:bg-white cursor-pointer text-gray-400 hover:text-gray-800 transition-colors"
               >
                 <svg
                   className="w-6 h-6"
@@ -133,8 +197,8 @@ const StudentDashboard = () => {
                 </svg>
               </button>
               <button
-                onClick={() => scroll("right")}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-800 transition-colors"
+                onClick={() => scroll(pastScrollRef, "right")}
+                className="p-2 rounded-full hover:bg-white cursor-pointer text-gray-800 transition-colors"
               >
                 <svg
                   className="w-6 h-6"
@@ -154,7 +218,7 @@ const StudentDashboard = () => {
           </div>
 
           <div
-            ref={scrollContainerRef}
+            ref={pastScrollRef}
             className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
