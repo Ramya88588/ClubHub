@@ -1,7 +1,6 @@
 import Navbar from "@/components/layout/DashboardC/Navbar";
 import React from "react";
-import { Plus } from "lucide-react";
-import { BarChart3, Users, Send } from "lucide-react";
+import { Plus, BarChart3, Users, Send, Calendar, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import ClubEventCard from "@/components/shared/clubEventCard";
 import EventCard from "@/components/shared/eventCard";
 import FooterPage from "@/components/layout/landing/FooterPage";
@@ -11,36 +10,33 @@ import {
   getClubUpcomingEvents,
   getClubPastEvents,
   getUserById,
-  getClubById,
+  getClubById
 } from "@/firebase/collections";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
-import Loader from "@/components/shared/Loader";
 
 const ClubDashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [club, setClub] = useState(null);
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+  const [showAllPast, setShowAllPast] = useState(false);
   const navigate = useNavigate();
 
-  // TEMP (replace later with real club auth)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) return;
 
       const userDoc = await getUserById(user.uid);
-
       if (userDoc?.role !== "CLUB") {
         console.error("Not a club account");
         return;
       }
 
-      // fetch club profile
       const clubData = await getClubById(user.uid);
       setClub(clubData);
 
-      // ✅ USE AUTH UID AS CLUB ID
       const [upcoming, past] = await Promise.all([
         getClubUpcomingEvents(user.uid),
         getClubPastEvents(user.uid),
@@ -56,144 +52,331 @@ const ClubDashboard = () => {
 
   if (loading) {
     return (
-      <Loader
-        message="Loading your dashboard…"
-        subMessage="Fetching events and club data"
-        variant="skeleton"
-      />
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
     );
   }
 
+  const displayedUpcomingEvents = showAllUpcoming ? upcomingEvents : upcomingEvents.slice(0, 3);
+  const displayedPastEvents = showAllPast ? pastEvents : pastEvents.slice(0, 3);
+
   return (
-    <div className="overflow-y-scroll  no-scrollbar h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="bg-[#f8f9fa] px-8 py-10 mt-15">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* TOP ROW: TITLE + PRIMARY ACTION */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      
+      {/* Add padding-top to fix navbar overlap */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Welcome back,{" "}
+            <span className="text-blue-600">{club?.clubName || "Club"}</span>
+          </h1>
+          <p className="text-gray-600 mt-2">Manage your events and track club performance</p>
+        </div>
+
+        {/* Top Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Club Members Card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{club?.membersCount || 0}</p>
+                <p className="text-gray-600">Total Members</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Upcoming Events Card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{upcomingEvents.length}</p>
+                <p className="text-gray-600">Upcoming Events</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Past Events Card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-yellow-50 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-yellow-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{pastEvents.length}</p>
+                <p className="text-gray-600">Past Events</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Club Info Card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <h3 className="font-semibold text-gray-900 mb-3">Club Details</h3>
+            {!club ? (
+              <p className="text-gray-400">Loading...</p>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-gray-600">
+                  <span className="font-medium">Name:</span> {club.clubName}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-medium">President:</span> {club.presidentName}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions Section */}
+        <div className="mb-12">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* Create Event Card - Takes 2 columns */}
+            <Link 
+              to="/club/create-event" 
+              className="lg:col-span-2"
+            >
+              <div className="h-full bg-white border border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-md transition-all duration-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <Plus className="w-7 h-7 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Create New Event</h3>
+                    <p className="text-gray-600 text-sm">Set up your next campus event</p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Analytics Card */}
+            <button 
+              onClick={() => navigate("/club/analytics")}
+              className="bg-white border border-gray-200 hover:border-blue-200 rounded-xl p-5 transition-all duration-200"
+            >
+              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-3 mx-auto">
+                <BarChart3 className="w-6 h-6 text-blue-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900 text-center">Analytics</h4>
+            </button>
+
+            {/* View Members Card */}
+            <button 
+              onClick={() => navigate("/club/members")}
+              className="bg-white border border-gray-200 hover:border-green-200 rounded-xl p-5 transition-all duration-200"
+            >
+              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-3 mx-auto">
+                <Users className="w-6 h-6 text-green-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900 text-center">View Members</h4>
+            </button>
+
+            {/* Announcement Card */}
+            <button 
+              onClick={() => navigate("/club/announcements")}
+              className="bg-white border border-gray-200 hover:border-red-200 rounded-xl p-5 transition-all duration-200"
+            >
+              <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center mb-3 mx-auto">
+                <Send className="w-6 h-6 text-red-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900 text-center">Announce</h4>
+            </button>
+          </div>
+        </div>
+
+        {/* Upcoming Events */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-semibold text-gray-900">
-                <span className="text-green-500">
-                  {club?.clubName || "Club"}
-                </span>{" "}
-                Dashboard
-              </h1>
-              <p className="text-gray-500 mt-1">
-                Manage events, members, and announcements for your club
+              <h2 className="text-2xl font-bold text-gray-900">Upcoming Events</h2>
+              <p className="text-gray-600 mt-1">Events scheduled for the future</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">
+                {upcomingEvents.length} event{upcomingEvents.length !== 1 ? 's' : ''}
+              </span>
+              {upcomingEvents.length > 3 && (
+                <button
+                  onClick={() => setShowAllUpcoming(!showAllUpcoming)}
+                  className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                >
+                  {showAllUpcoming ? (
+                    <>
+                      Show less
+                      <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      Show all
+                      <ChevronDown className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+          
+          {upcomingEvents.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+              <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No upcoming events</h3>
+              <p className="text-gray-600 mb-4">Start by creating your first event</p>
+              <Link
+                to="/club/create-event"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+              >
+                <Plus className="w-4 h-4" />
+                Create Event
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {displayedUpcomingEvents.map((event) => (
+                  <ClubEventCard
+                    key={event.id}
+                    id={event.id}
+                    title={event.title}
+                    description={event.description}
+                    date={event.date}
+                    type={event.type}
+                    theme={event.theme}
+                    image={event.image}
+                    status={event.status}
+                    registeredMembers={event.registeredUsers?.length || 0}
+                  />
+                ))}
+              </div>
+              
+              {upcomingEvents.length > 3 && (
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => setShowAllUpcoming(!showAllUpcoming)}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    {showAllUpcoming ? (
+                      <>
+                        <ChevronUp className="w-4 h-4" />
+                        Show less events
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-4 h-4" />
+                        Show all {upcomingEvents.length} events
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Past Events */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Past Events</h2>
+              <p className="text-gray-600 mt-1">Events you've already conducted</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">
+                {pastEvents.length} event{pastEvents.length !== 1 ? 's' : ''}
+              </span>
+              {pastEvents.length > 3 && (
+                <button
+                  onClick={() => setShowAllPast(!showAllPast)}
+                  className="flex items-center gap-1 text-sm text-green-600 hover:text-green-700"
+                >
+                  {showAllPast ? (
+                    <>
+                      Show less
+                      <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      Show all
+                      <ChevronDown className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+          
+          {pastEvents.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+              <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No past events yet</h3>
+              <p className="text-gray-600">Your event history will appear here</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {displayedPastEvents.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    id={event.id}
+                    {...event}
+                    showAnalytics
+                  />
+                ))}
+              </div>
+              
+              {pastEvents.length > 3 && (
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => setShowAllPast(!showAllPast)}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    {showAllPast ? (
+                      <>
+                        <ChevronUp className="w-4 h-4" />
+                        Show less events
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-4 h-4" />
+                        Show all {pastEvents.length} events
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Club Status Banner */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Is your club hiring members?</h3>
+              <p className="text-gray-600">
+                Post your status on the clubs page to find new talented members for your team.
               </p>
             </div>
-
-            {/* PRIMARY CTA */}
-            <Link
-              to="/club/create-event"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white border-gray-300 border-2 text-black rounded-lg font-medium hover:border-green-500 transition w-fit"
+            <button
+              onClick={() => navigate("/club/settings")}
+              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 whitespace-nowrap"
             >
-              <Plus size={30} className="text-green-500"></Plus>
-              Create Event
-            </Link>
-          </div>
-
-          {/* QUICK ACTIONS */}
-          <div className="bg-white border rounded-md p-6">
-            <div className="flex flex-col md:flex-row gap-6 justify-around">
-              <button
-                onClick={() => navigate("/club/analytics")}
-                className="flex items-center gap-3 text-gray-700 hover:text-yellow-600 cursor-pointer transition"
-              >
-                <BarChart3 className="w-6 h-6" />
-                <span className="font-medium">View Analytics</span>
-              </button>
-
-              <button
-                onClick={() => navigate("/club/members")}
-                className="flex items-center gap-3 text-gray-700 hover:text-blue-600 cursor-pointer transition"
-              >
-                <Users className="w-6 h-6" />
-                <span className="font-medium">Manage Members</span>
-              </button>
-
-              <button
-                onClick={() => navigate("/club/announcements")}
-                className="flex items-center gap-3 text-gray-700 hover:text-red-600 cursor-pointer transition"
-              >
-                <Send className="w-6 h-6" />
-                <span className="font-medium">Send Announcement</span>
-              </button>
-            </div>
+              Update Club Status
+            </button>
           </div>
         </div>
-      </div>
+      </main>
 
-      <div className="two flex justify-evenly py-8 bg-white">
-        <div className="uP text-blue-500 flex flex-col items-center">
-          <p className="text-[36px]">{upcomingEvents.length}</p>
-          <span className="font-light">Upcoming Events</span>
-        </div>
-        <div className="eA text-green-500 flex flex-col items-center">
-          <p className="text-[36px]">{pastEvents.length}</p>
-          <span className="font-light"> Events Conducted</span>
-        </div>
-        <div className="cH text-yellow-500 flex flex-col items-center">
-          <p className="text-[36px]">3</p>
-          <span className="font-light">Club Hiring</span>
-        </div>
-      </div>
-      <div className="p-16 bg-[#f8f9fa] flex gap-8 flex-col">
-        <span className="text-xl font-semibold ">MY CLUB'S EVENTS</span>
-        <div className="flex flex-wrap gap-10">
-          {upcomingEvents.length === 0 ? (
-            <h1>No Upcoming Events</h1>
-          ) : (
-            upcomingEvents.map((event) => (
-              <ClubEventCard
-                key={event.id}
-                id={event.id}
-                title={event.title}
-                description={event.description}
-                date={event.date}
-                type={event.type}
-                theme={event.theme}
-                image={event.image}
-                status={event.status}
-                registeredMembers={event.registeredUsers?.length || 0}
-              />
-            ))
-          )}
-        </div>
-      </div>
-      {/* Past Events */}
-      <div className="bg-white p-16 flex flex-col gap-8">
-        <span className="font-semibold text-xl">MY PAST EVENTS</span>
-        <div className="flex gap-10 flex-wrap">
-          {pastEvents.length === 0 ? (
-            <p>No past events</p>
-          ) : (
-            pastEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                id={event.id}
-                {...event}
-                showAnalytics
-              />
-            ))
-          )}
-        </div>
-      </div>
-      <div className="flex flex-col lg:flex-row p-25 bg-[#f8f9fa] gap-5 justify-between">
-        <div className="text-center lg:text-left">
-          <p className="text-xl ">Is your club hiring members?</p>
-          <p className="text-md font-light">
-            Yes? Then post your status in the clubs page to find new talented
-            members
-          </p>
-        </div>
-        <div
-          className="bg-yellow-500 text-white rounded-lg h-fit flex items-center justify-center px-10 py-2 cursor-pointer"
-          onClick={() => navigate("/club/settings")}
-        >
-          <p>Update your club status</p>
-        </div>
-      </div>
       <FooterPage />
     </div>
   );
