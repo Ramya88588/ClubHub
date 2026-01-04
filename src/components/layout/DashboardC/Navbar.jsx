@@ -83,7 +83,7 @@ const Navbar = () => {
             <NavItem to="/club" label="Dashboard" activeColor="green" />
           </li>
           <li>
-            <NavItem to="/club/draftEvents" label="Draft Events" activeColor="green" />
+            <NavItem to="/club/drafts" label="Draft Events" activeColor="green" />
           </li>
           <li className="active:bg-transparent hover:bg-transparent">
             <NavItem to="/club/members" label="Members" activeColor="green" />
