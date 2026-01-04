@@ -8,6 +8,7 @@ import Navbar from "@/components/layout/DashboardC/Navbar";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import Loader from "@/components/shared/Loader";
+import FooterPage from "@/components/layout/landing/FooterPage";
 
 const DraftEventsPage = () => {
   const [draftEvents, setDraftEvents] = useState([]);
@@ -118,6 +119,7 @@ const DraftEventsPage = () => {
           </section>
         </div>
       </div>
+      <FooterPage />
     </div>
   );
 };

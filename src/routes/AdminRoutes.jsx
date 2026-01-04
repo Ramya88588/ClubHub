@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
 import { getUserById } from "@/firebase/collections";
@@ -11,7 +11,8 @@ import Loader from "@/components/shared/Loader";
 
 const AdminRoutes = () => {
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [allowed, setAllowed] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -20,26 +21,34 @@ const AdminRoutes = () => {
         return;
       }
 
-      const userDoc = await getUserById(user.uid);
+      try {
+        const userDoc = await getUserById(user.uid);
 
-      // ✅ CORRECT CHECK
-      if (userDoc?.isAdmin === true) {
-        setIsAdmin(true);
+        // ✅ Role-based check (consistent everywhere)
+        if (userDoc?.role === "ADMIN") {
+          setAllowed(true);
+        } else {
+          console.error("Access denied: not an admin account");
+          alert("This dashboard is only available for Admin accounts.");
+          navigate(-1);
+        }
+      } catch (err) {
+        console.error("Admin access check failed:", err);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     return () => unsub();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
-    return <Loader message="Checking Permissions..." />;
+    return <Loader message="Checking permissions..." />;
   }
 
-  if (!isAdmin) {
-    return <Navigate to="/" replace />;
-  }
+  // if (!allowed) {
+  //   return <Navigate to="/" replace />;
+  // }
 
   return (
     <Routes>
