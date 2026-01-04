@@ -22,6 +22,7 @@ const EventCard = ({
   image,
   showAnalytics = false,
   feedbackFormLink,
+  path
 }) => {
   const colors = getThemeClasses(theme);
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ const EventCard = ({
         {showAnalytics ? (
           <button
             onClick={() => navigate(`/club/events/${id}/analytics`)}
-            className={`px-4 py-2 rounded-lg text-sm text-white ${
+            className={`px-4 py-1 rounded-lg text-sm text-white ${
               theme === "yellow"
                 ? "bg-yellow-400 hover:bg-yellow-500"
                 : theme === "red"
@@ -90,7 +91,7 @@ const EventCard = ({
           </button>
         ) : (
           <button
-            onClick={() => navigate(`/club/events/${id}`)}
+            onClick={() => navigate(path)}
             className="p-2 rounded-full hover:bg-blue-50 transition"
           >
             <svg

@@ -37,7 +37,7 @@ const ClubMembers = () => {
   return (
     <div>
     <Navbar/>
-    <div className="mt-18 p-16 bg-[#f8f9fa] min-h-screen">
+    <div className="mt-15 p-16 bg-[#f8f9fa] min-h-screen">
       
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}

@@ -4,10 +4,10 @@ import AIChatbot from "./components/chatbot/AIChatbot";
 
 const App = () => {
   return (
-    <>
+    <div className="">
       <AppRoutes />
       <AIChatbot />
-    </>
+    </div>
   );
 };
 

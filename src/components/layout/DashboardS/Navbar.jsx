@@ -114,12 +114,12 @@ const Navbar = () => {
               </div>
               <ul
                 tabIndex="-1"
-                className="dropdown-content menu bg-white rounded-xs z-1 w-52 shadow-sm "
+                className="dropdown-content menu bg-white rounded-xs z-1 w-52 shadow-sm text-black"
               >
-                <li className="text-center text-blue-500 text-[20px] hover:bg-blue-50 hover:rounded-xs">
+                <li className="text-center  text-[20px] hover:bg-blue-50 hover:rounded-xs">
                   <Link to="/student/profile">Profile</Link>
                 </li>
-                <li className="text-center text-blue-500 text-[20px] hover:bg-blue-50 hover:rounded-xs">
+                <li className="text-center text-[20px] hover:bg-blue-50 hover:rounded-xs">
                   <Link to="/student/settings">Settings</Link>
                 </li>
                 <li className="text-center text-[20px] bg-red-50 rounded-xs hover:bg-red-100 hover:rounded-xs">
