@@ -36,7 +36,7 @@ const EventCard = ({
   };
 
   return (
-    <div className="min-w-[280px] w-[280px] h-[360px] bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 duration-300">
+    <div className="min-w-[280px] w-[280px] h-[360px] bg-white border border-gray-200 rounded-sm overflow-hidden shadow-xs flex flex-col transition-all  hover:shadow-sm hover:-translate-y-0.5 duration-300">
       {/* IMAGE */}
       <div className="h-[50%] bg-gray-50 relative flex items-center justify-center border-b">
         <span
@@ -90,8 +90,8 @@ const EventCard = ({
           </button>
         ) : (
           <button
-            onClick={() => navigate(`/club/events/${id}`)}
-            className="p-2 rounded-full hover:bg-blue-50 transition"
+            onClick={() => navigate(`/student/events/${id}`)}
+            className="cursor-pointer p-2 rounded-full hover:bg-blue-50 transition"
           >
             <svg
               className="w-5 h-5 text-blue-500"
