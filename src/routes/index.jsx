@@ -12,7 +12,15 @@ export default function AppRoutes() {
     <Routes>
       {/* Public */}
       <Route path="/*" element={<PublicRoutes />} />
-
+      {/* Admin */}
+      <Route
+        path="/admin/*"
+        element={
+          <PrivateRoute>
+            <AdminRoutes />
+          </PrivateRoute>
+        }
+      />
       {/* Student */}
       <Route
         path="/student/*"
@@ -33,15 +41,7 @@ export default function AppRoutes() {
         }
       />
 
-      {/* Admin */}
-      <Route
-        path="/admin/*"
-        element={
-          <PrivateRoute>
-            <AdminRoutes />
-          </PrivateRoute>
-        }
-      />
+
 
       {/* 404 */}
       <Route path="*" element={<NotFoundPage />} />

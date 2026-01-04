@@ -1,42 +1,48 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
-import { auth } from "@/firebase/firebase";
 import { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/firebase/firebase";
 import { getUserById } from "@/firebase/collections";
 
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminApprove from "@/pages/admin/AdminApprove";
+import ClubManagementPage from "@/pages/admin/ClubManagementPage";
+
 const AdminRoutes = () => {
-  const [allowed, setAllowed] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkAdmin = async () => {
-      const user = auth.currentUser;
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        setAllowed(false);
+        setLoading(false);
         return;
       }
 
       const userDoc = await getUserById(user.uid);
 
-      // 🔐 ONLY ADMINS
-      setAllowed(userDoc?.role === "ADMIN");
-    };
+      // ✅ CORRECT CHECK
+      if (userDoc?.isAdmin === true) {
+        setIsAdmin(true);
+      }
 
-    checkAdmin();
+      setLoading(false);
+    });
+
+    return () => unsub();
   }, []);
 
-  if (allowed === null) {
-    return <p className="p-10">Checking permissions...</p>;
-  }
+  if (loading) return null;
 
-  if (!allowed) {
+  if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
 
   return (
     <Routes>
-      <Route index element={<AdminDashboard />} />
-      {/* future admin routes */}
-      {/* <Route path="users" element={<AdminUsers />} /> */}
+      <Route path="/" element={<AdminDashboard />} />
+      <Route path="/approve" element={<AdminApprove />} />
+      <Route path="/clubs" element={<ClubManagementPage />} />
     </Routes>
   );
 };
