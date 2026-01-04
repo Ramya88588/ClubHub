@@ -242,22 +242,29 @@ const ClubDashboard = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedUpcomingEvents.map((event) => (
-                  <ClubEventCard
-                    key={event.id}
-                    id={event.id}
-                    title={event.title}
-                    description={event.description}
-                    date={event.date}
-                    type={event.type}
-                    theme={event.theme}
-                    image={event.image}
-                    status={event.status}
-                    registeredMembers={event.registeredUsers?.length || 0}
-                  />
-                ))}
-              </div>
+            <div className="flex flex-wrap justify-start gap-7">
+  {displayedUpcomingEvents.map((event) => (
+    <div
+      key={event.id}
+      className=""
+    >
+      <ClubEventCard
+        id={event.id}
+        title={event.title}
+        description={event.description}
+        date={event.date}
+        type={event.type}
+        theme={event.theme}
+        image={event.image}
+        status={event.status}
+        registeredMembers={event.registeredUsers?.length || 0}
+      />
+    </div>
+    
+    
+  ))}
+</div>
+
               
               {upcomingEvents.length > 3 && (
                 <div className="mt-6 text-center">
@@ -323,16 +330,21 @@ const ClubDashboard = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedPastEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    id={event.id}
-                    {...event}
-                    showAnalytics
-                  />
-                ))}
-              </div>
+              <div className="flex flex-wrap gap-7">
+  {displayedPastEvents.map((event) => (
+    <div
+      key={event.id}
+      className=""
+    >
+      <EventCard
+        id={event.id}
+        {...event}
+        showAnalytics
+      />
+    </div>
+  ))}
+</div>
+
               
               {pastEvents.length > 3 && (
                 <div className="mt-6 text-center">

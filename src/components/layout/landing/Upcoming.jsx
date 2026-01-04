@@ -37,13 +37,13 @@ const Upcoming = () => {
 
   if (loading) {
     return (
-      <div className="p-6 py-20 bg-base-200">
+      <div className="p-6 py-20 bg-white">
         <p>Loading upcoming events...</p>
       </div>
     );
   }
   return (
-    <div className="p-6 pb-20 flex flex-col gap-7 bg-base-200 mt-10 border-y py-20">
+    <div className="p-6 pb-20 flex flex-col gap-7 bg-[#f9f9fa] mt-10 border-y py-20">
       <span className="font-semibold text-3xl">UPCOMING EVENTS</span>
       <div className="flex flex-wrap gap-4">
         {events.map((event) => (

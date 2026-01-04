@@ -40,7 +40,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md z-50 border-b border-gray-200 h-16 px-5">
+    <div className="navbar bg-white shadow-sm fixed top-0 left-0 w-full backdrop-blur-md z-50 border-b border-gray-200 h-16 px-5">
       <div className="flex-1">
         <div className="logo-cnt flex items-center font-['Inter'] gap-3">
           <svg
@@ -110,11 +110,11 @@ const Navbar = () => {
                   )}
                 </div>
 
-                <RiArrowDropDownLine />
+                <RiArrowDropDownLine size={25}/>
               </div>
               <ul
                 tabIndex="-1"
-                className="dropdown-content menu bg-base-100 rounded-xs z-1 w-52 shadow-sm"
+                className="dropdown-content menu bg-white rounded-xs z-1 w-52 shadow-sm "
               >
                 <li className="text-center text-blue-500 text-[20px] hover:bg-blue-50 hover:rounded-xs">
                   <Link to="/student/profile">Profile</Link>

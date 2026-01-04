@@ -43,11 +43,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative w-screen h-screen">
-    <div className="absolute inset-0 w-full h-full bg-cover" style={{backgroundImage:`url(${bgImg})`}}>
-    <div className="absolute bg-black/20 inset-0"></div>
+    <div className="relative w-screen h-screen bg-[#f8f9fa]">
     <div className="relative z-10"><SignUpCard2 txt="in" onGoogleLogin={handleGoogleLogin} /></div>
-    </div>
     </div>
   )
 }

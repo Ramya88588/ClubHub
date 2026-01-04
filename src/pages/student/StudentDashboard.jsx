@@ -118,7 +118,7 @@ const StudentDashboard = () => {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {events.map((event) => (
-              <div key={event.id} className="shrink-0 w-80">
+              <div key={event.id} className="shrink-0 w-auto">
                 <EventCard
                   {...event}
                   variant="details"
@@ -286,7 +286,7 @@ const StudentDashboard = () => {
                     style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                   >
                     {recommendedEvents.map((event) => (
-                      <div key={event.id} className="shrink-0 w-80">
+                      <div key={event.id} className="shrink-0 w-auto">
                         <EventCard
                           {...event}
                           variant="details"

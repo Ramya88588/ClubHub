@@ -10,7 +10,7 @@ const Hero = () => {
         className="absolute inset-0 bg-[url('/src/assets/landingPage.png')]
         bg-cover bg-center"
       />
-      <div className="absolute inset-0 bg-white/70" />
+      <div className="absolute inset-0 bg-white/50" />
 
       {/* Content */}
       <div

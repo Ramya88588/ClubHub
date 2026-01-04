@@ -93,7 +93,7 @@ const ClubEventCard = ({
           {status === "upcoming" && (
             <button
               onClick={() => navigate(`/club/events/${id}/registrations`)}
-              className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100"
+              className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100"
             >
               View Registrations
             </button>

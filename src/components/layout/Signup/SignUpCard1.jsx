@@ -145,7 +145,7 @@ const SignUpCard1 = () => {
   return (
     <div
       className="absolute inset-0 w-full h-full bg-cover"
-      style={{ backgroundImage: `url(${bgImg})` }}
+      // style={{ backgroundImage: `url(${bgImg})` }}
     >
       <div className="flex justify-center items-center min-h-screen px-4">
         <div className="max-w-4xl w-full bg-white shadow-sm rounded-md p-10 text-center">

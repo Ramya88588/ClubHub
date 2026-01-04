@@ -4,7 +4,7 @@ import ButtonBg from "../../shared/button2";
 
 const Navbar = () => {
   return (
-    <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md z-50 border-b border-gray-200 h-16 px-5">
+    <div className="navbar fixed top-0 left-0 w-full backdrop-blur-md z-50 border-b border-gray-200 h-16 px-5 bg-white text-black shadow-sm">
       <div className="flex-1">
         <div className="logo-cnt flex items-center font-['Inter'] gap-3">
           <svg

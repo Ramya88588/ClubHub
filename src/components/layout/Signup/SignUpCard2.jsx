@@ -21,7 +21,7 @@ const SingUpCard2 = ({ txt, onGoogleLogin, children }) => {
   // };
   return (
     <div className="min-h-screen flex items-center justify-center min-w-screen">
-      <div className="card w-176 h-100 bg-base-100 card-xl shadow-sm flex items-center justify-center gap-6">
+      <div className="card w-176 h-100 bg-white card-xl shadow-sm flex items-center justify-center gap-6">
         <h2 className="card-title text-[24px] justify-center">
           {" "}
           <svg

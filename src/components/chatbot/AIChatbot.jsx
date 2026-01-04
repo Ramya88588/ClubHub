@@ -9,7 +9,7 @@ export default function AIChatbot() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 w-[59px] h-[59px] rounded-full text-white shadow-lg z-40 cursor-pointer"
+        className="fixed bottom-6 right-6 w-14.75 h-14.75 rounded-full text-white shadow-lg z-40 cursor-pointer border border-black"
         aria-label="Open chatbot"
       >
         <img
