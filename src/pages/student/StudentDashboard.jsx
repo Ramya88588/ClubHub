@@ -169,7 +169,7 @@ const StudentDashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">
             Welcome back,{" "}
             <span className="text-blue-600">
-              {student?.profile.displayName || "Student"}
+              {student?.profile.fullName || "Student"}
             </span>
           </h1>
           <p className="text-gray-600 mt-2">
