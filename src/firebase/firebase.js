@@ -5,13 +5,14 @@ import {getFirestore} from "firebase/firestore"
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCXkqPNJ1wD6TrJKQfcYGbSmefc88LxrFw",
-  authDomain: "club-hub-v.firebaseapp.com",
-  projectId: "club-hub-v",
-  storageBucket: "club-hub-v.firebasestorage.app",
-  messagingSenderId: "107806221828",
-  appId: "1:107806221828:web:5462a2dd407380aa6ab751"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+
 
 
 const app = initializeApp(firebaseConfig);

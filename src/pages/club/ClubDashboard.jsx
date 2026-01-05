@@ -170,9 +170,9 @@ const ClubDashboard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Create Event Card - Takes 2 columns */}
             <Link to="/club/create-event" className="lg:col-span-2">
-              <div className="h-full bg-white border border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-md transition-all duration-200">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center">
+              <div className="h-full border border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-md transition-all duration-200 bg-yellow-400 shadow-lg">
+                <div className="flex items-center gap-4 ">
+                  <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center ">
                     <Plus className="w-7 h-7 text-green-600" />
                   </div>
                   <div>
@@ -279,7 +279,7 @@ const ClubDashboard = () => {
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200"
               >
                 <Plus className="w-4 h-4" />
-                Create Event
+                <span>Create Event</span>
               </Link>
             </div>
           ) : (
