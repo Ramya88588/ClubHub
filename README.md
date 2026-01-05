@@ -1,16 +1,120 @@
-# React + Vite
+# ClubHub 
+A Unified College Club & Student Engagement Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ClubHub is a centralized web platform designed to streamline **college club management, student engagement, event coordination, and academic assistance**.  
+It replaces fragmented tools like WhatsApp groups, Google Forms, and spreadsheets with a single, structured, and scalable system.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Problem Statement
 
-## React Compiler
+In most colleges, club activities and academic coordination suffer from:
+- Scattered communication across multiple platforms
+- Manual and error-prone event and member management
+- No centralized view of announcements, hiring, or schedules
+- Difficulty for students to track events and academic timetables
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This leads to confusion, missed opportunities, and poor engagement.
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Our Solution
+
+ClubHub provides a **unified digital platform** where:
+- Clubs can manage events, members, hiring, and announcements
+- Students can discover clubs, events, and academic information easily
+- AI assists users through an interactive chatbot and timetable extraction
+
+The platform supports **role-based dashboards** ensuring clarity, security, and efficiency.
+
+
+## Key Features
+
+### Student Features
+- Browse and filter clubs and events
+- View announcements in real time
+- Academic timetable extraction & viewing
+- AI chatbot for guidance and quick queries
+
+### Club Admin Features
+- Create, edit, and manage events
+- Draft & publish events
+- Manage club hiring status with Google Form links
+- Post announcements
+- View upcoming and past events
+- Club dashboard with analytics-ready structure
+
+### AI Features
+- AI chatbot for:
+  - Platform guidance
+  - Event & timetable queries
+- Academic timetable extraction from uploaded data
+- AI powered via **Gemini (through puter.js)**
+
+### Platform Admin Features
+- Approve and manage clubs
+- Monitor platform activity
+- Ensure role-based access control
+
+
+## Architecture Overview
+
+- **Client Layer**  
+  React + Vite frontend with role-based dashboards (Student, Club, Admin)
+
+- **Backend & Services**
+  Firebase Firestore (Database)  
+  Firebase Authentication  
+  Firebase Storage  
+
+- **AI Layer**
+  Gemini AI accessed via puter.js  
+  Used only where meaningful (chatbot & timetable parsing)
+
+- **Deployment**
+  Firebase Hosting / Vercel (frontend-ready)
+
+
+## Google Technologies Used
+
+- **Firebase Authentication** – Secure login & role management  
+- **Firestore Database** – Real-time data storage  
+- **Firebase Storage** – Assets & uploads  
+- **Gemini AI** – AI chatbot & timetable extraction (via puter.js)  
+
+
+## Process Flow (High Level)
+
+1. User logs in (Student / Club / Admin)
+2. Role-based dashboard loads
+3. User interacts with events, clubs, or academics
+4. AI chatbot assists where needed
+5. Data updates reflect in real time via Firestore
+
+
+## Future Enhancements
+
+- AI-powered event recommendations
+- Smart notifications & reminders
+- Advanced analytics dashboard for clubs
+- Attendance prediction & insights
+- Mobile app / PWA support
+- Deeper AI integration (only where value is added)
+
+
+## Project Links
+
+- **Demo Video (3 Minutes):**  
+  (_Add video link here_)
+
+- **MVP Live Link:**  
+  (_Add deployed link here_)
+
+
+## Team
+
+Built as part of **GDG on Campus - TechSprint**  
+Focused on scalability, clean UX, and practical AI usage.
+
+
+## License
+
+This project is for educational and hackathon purposes.
