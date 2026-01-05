@@ -76,6 +76,7 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
 import { createUser } from "@/firebase/collections";
+import bgImg from "@/assets/SignIn.png";
 
 const SignUpCard1 = () => {
   const navigate = useNavigate();
@@ -143,59 +144,64 @@ const SignUpCard1 = () => {
   };
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
-      <div className="max-w-4xl w-full bg-white shadow-sm rounded-md p-10 text-center">
-        {/* Header */}
-        <h1 className="font-semibold text-3xl">Join the community</h1>
-        <p className="font-light text-xl mt-2">
-          Please select the role that best describes you
-        </p>
+      <div
+        className="absolute inset-0 w-full h-full bg-cover"
+        style={{ backgroundImage: `url(${bgImg})` }}
+      >
+        <div className="max-w-4xl w-full bg-white shadow-sm rounded-md p-10 text-center">
+          {/* Header */}
+          <h1 className="font-semibold text-3xl">Join the community</h1>
+          <p className="font-light text-xl mt-2">
+            Please select the role that best describes you
+          </p>
 
-        {/* Cards */}
-        <div className="flex gap-10 mt-10 flex-col md:flex-row justify-center">
-          {/* Student */}
-          <div
-            onClick={handleStudent}
-            className="border rounded-sm p-6 flex flex-col gap-4 hover:shadow-md transition cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-blue-500 p-4 bg-blue-200 rounded-full w-fit text-[32px]">
-              school
-            </span>
+          {/* Cards */}
+          <div className="flex gap-10 mt-10 flex-col md:flex-row justify-center">
+            {/* Student */}
+            <div
+              onClick={handleStudent}
+              className="border rounded-sm p-6 flex flex-col gap-4 hover:shadow-md transition cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-blue-500 p-4 bg-blue-200 rounded-full w-fit text-[32px]">
+                school
+              </span>
 
-            <h2 className="text-xl font-semibold text-left">
-              I am a <span className="text-blue-500">Student</span>
-            </h2>
+              <h2 className="text-xl font-semibold text-left">
+                I am a <span className="text-blue-500">Student</span>
+              </h2>
 
-            <p className="text-gray-600 text-left">
-              Looking to join clubs, attend events and expand my network on
-              campus
-            </p>
+              <p className="text-gray-600 text-left">
+                Looking to join clubs, attend events and expand my network on
+                campus
+              </p>
 
-            <button className="w-full border-blue-500 border-2 rounded-sm p-2 hover:bg-blue-50">
-              Continue as Student
-            </button>
-          </div>
+              <button className="w-full border-blue-500 border-2 rounded-sm p-2 hover:bg-blue-50">
+                Continue as Student
+              </button>
+            </div>
 
-          {/* Club Leader */}
-          <div
-            onClick={handleClub}
-            className="border rounded-sm p-6 flex flex-col gap-4 hover:shadow-md transition cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-green-500 p-4 bg-green-200 rounded-full w-fit text-[32px]">
-              verified_user
-            </span>
+            {/* Club Leader */}
+            <div
+              onClick={handleClub}
+              className="border rounded-sm p-6 flex flex-col gap-4 hover:shadow-md transition cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-green-500 p-4 bg-green-200 rounded-full w-fit text-[32px]">
+                verified_user
+              </span>
 
-            <h2 className="text-xl font-semibold text-left">
-              I am a <span className="text-green-500">Club Leader</span>
-            </h2>
+              <h2 className="text-xl font-semibold text-left">
+                I am a <span className="text-green-500">Club Leader</span>
+              </h2>
 
-            <p className="text-gray-600 text-left">
-              Looking to manage events, recruit members, and grow your club
-              community
-            </p>
+              <p className="text-gray-600 text-left">
+                Looking to manage events, recruit members, and grow your club
+                community
+              </p>
 
-            <button className="w-full bg-green-500 text-white rounded-sm p-2 hover:bg-green-600">
-              Continue as Club Leader
-            </button>
+              <button className="w-full bg-green-500 text-white rounded-sm p-2 hover:bg-green-600">
+                Continue as Club Leader
+              </button>
+            </div>
           </div>
         </div>
       </div>
