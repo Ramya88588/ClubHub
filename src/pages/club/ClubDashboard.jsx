@@ -170,16 +170,16 @@ const ClubDashboard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Create Event Card - Takes 2 columns */}
             <Link to="/club/create-event" className="lg:col-span-2">
-              <div className="h-full border items-center text-gray-50 border-gray-200 rounded-xl p-6 hover:border-gray-300 shadow-md transition-all duration-200 bg-green-300 hover:bg-green-400 hover:shadow-lg">
+              <div className="h-full border flex items-center  border-gray-200 rounded-xl p-6 hover:border-gray-300 shadow-md transition-all duration-200 bg-green-300 hover:bg-green-400 hover:shadow-lg">
                 <div className="flex items-center gap-4 ">
                   <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center ">
                     <Plus className="w-7 h-7 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <h3 className="text-lg font-semibold text-gray-50 mb-1">
                       Create New Event
                     </h3>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-gray-50 text-sm">
                       Set up your next campus event
                     </p>
                   </div>
