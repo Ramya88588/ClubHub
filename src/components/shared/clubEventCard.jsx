@@ -33,7 +33,7 @@ const ClubEventCard = ({
     <div
       onClick={() => navigate(`/club/events/${id}`)}
       className="
-        min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:scale-[1.01] hover:shadow-xl hover:-translate-y-1  duration-300 group 
+        min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 hover:scale-[1.01] hover:shadow-xl hover:-translate-y-0.5 duration-300 group 
       "
     >
       {/* Image Section (fixed height) */}
@@ -84,7 +84,7 @@ const ClubEventCard = ({
         <div className="flex items-center gap-2">
           {/* Edit button */}
           <Link to={`/club/edit-event/${id}`}>
-            <button className={`cursor-pointer px-6 py-1.5 rounded text-sm ${colors.edit}`}>
+            <button className={`cursor-pointer px-3 py-1.5 rounded text-sm hover:-translate-y-[0.5px] ${colors.edit}`}>
               Edit
             </button>
           </Link>
@@ -93,7 +93,7 @@ const ClubEventCard = ({
           {status === "upcoming" && (
             <button
               onClick={() => navigate(`/club/events/${id}/registrations`)}
-              className="cursor-pointer text-xs px-3 py-3 rounded-sm bg-blue-50 text-blue-600 hover:bg-blue-100"
+              className="cursor-pointer text-sm px-3 py-1.5 rounded-sm bg-blue-50 text-blue-600 hover:bg-blue-100"
             >
               View Registrations
             </button>
